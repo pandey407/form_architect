@@ -38,9 +38,17 @@ enum FormBrickType {
   @JsonValue('TOGGLE')
   toggle,
 
-  /// A checkbox field, typically for boolean input.
-  @JsonValue('CHECKBOX')
-  checkbox,
+  /// A multi-select field, allowing selection of multiple options.
+  @JsonValue('MULTISELECT')
+  multiSelect,
+
+  /// A single-select dropdown field.
+  @JsonValue('DROPDOWN')
+  dropdown,
+
+  /// A multi-select dropdown field.
+  @JsonValue('MULTISELECT_DROPDOWN')
+  multiSelectDropdown,
 
   /// A date selector field.
   @JsonValue('DATE')
@@ -53,18 +61,6 @@ enum FormBrickType {
   /// A field for selecting both date and time.
   @JsonValue('DATETIME')
   dateTime,
-
-  /// A multi-select field, allowing selection of multiple options.
-  @JsonValue('MULTISELECT')
-  multiSelect,
-
-  /// A single-select dropdown field.
-  @JsonValue('DROPDOWN')
-  dropdown,
-
-  /// A multi-select dropdown field.
-  @JsonValue('MULTISELECT_DROPDOWN')
-  multiSelectDropdown,
 
   /// A field for multimedia content (images, videos, etc.).
   @JsonValue('MULTIMEDIA')

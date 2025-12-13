@@ -32,52 +32,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final _formKey = GlobalKey<FormState>();
 
-  // Demo JSON for FormMasonry (a row/column form system)
-  static const Map<String, dynamic> demoFormJson = {
-    "type": "COL",
-    "children": [
-      {
-        "type": "TEXT",
-        "key": "name",
-        "label": "Name",
-        "hint": "Enter your name",
-      },
-      {
-        "type": "TEXT",
-        "key": "email",
-        "label": "Email",
-        "hint": "Enter your email address",
-      },
-      {
-        "type": "PASSWORD",
-        "key": "password",
-        "label": "Password",
-        "hint": "Enter a password",
-      },
-      {
-        "type": "DROPDOWN",
-        "key": "role",
-        "label": "Role",
-        "options": [
-          {"value": "user", "label": "User"},
-          {"value": "admin", "label": "Admin"},
-        ],
-      },
-      {"type": "CHECKBOX", "key": "accept", "label": "I accept the terms"},
-    ],
-  };
-
   // This will hold field values as the user fills the form
   Map<String, dynamic> formValues = {};
-
-  // Store the parsed FormMasonry here
-  late final FormMasonry formRoot;
 
   @override
   void initState() {
     super.initState();
-    // Parse FormMasonry from JSON only once in initState
-    formRoot = FormMasonry.fromJson(demoFormJson);
   }
 
   @override
@@ -136,6 +96,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   ].map((e) => FormBrickOption(value: e, label: e)).toList(),
                 ),
               ),
+              ToggleBrick(
+                brick: FormBrick<bool>(
+                  key: 'accepted_terms',
+                  type: FormBrickType.toggle,
+                  label: 'Accept Terms & Conditions',
+                  value: false,
+                ),
+              ),
+              SizedBox(height: 20),
             ],
           ),
         ),

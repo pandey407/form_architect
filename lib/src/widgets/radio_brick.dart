@@ -11,7 +11,6 @@ class RadioBrick<T> extends StatefulWidget {
 
 class _RadioBrickState<T> extends State<RadioBrick<T>> {
   T? groupValue;
-
   @override
   void initState() {
     super.initState();
@@ -21,41 +20,39 @@ class _RadioBrickState<T> extends State<RadioBrick<T>> {
   @override
   Widget build(BuildContext context) {
     final options = widget.brick.options;
-    if (options == null) return SizedBox.shrink();
-    return FormField(
-      initialValue: groupValue,
-
-      autovalidateMode: AutovalidateMode.always,
+    if (options == null) return const SizedBox.shrink();
+    return FormField<T>(
+      initialValue: widget.brick.value,
+      enabled: widget.brick.isEnabled,
+      autovalidateMode: AutovalidateMode.disabled,
       builder: (FormFieldState<T> field) {
         return RadioGroup(
+          groupValue: field.value,
           onChanged: (T? value) {
+            if (value == null) return;
+            if (!widget.brick.isEnabled) return;
+            field.didChange(value);
             setState(() {
               groupValue = value;
             });
           },
-          child: RadioGroup<T>(
-            onChanged: (value) {
-              if (value == null) return;
-              setState(() {
-                groupValue = value;
-              });
-            },
-            groupValue: groupValue,
-            child: Wrap(
-              spacing: 20,
-              runSpacing: 20,
-              children: options.map((option) {
-                return _RadioOption<T>(
-                  groupValue: groupValue,
-                  option: option,
-                  onChanged: (value) {
-                    setState(() {
-                      groupValue = value;
-                    });
-                  },
-                );
-              }).toList(),
-            ),
+          child: Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: options.map((option) {
+              return _RadioOption<T>(
+                groupValue: field.value,
+                option: option,
+                onChanged: widget.brick.isEnabled && !(option.disabled)
+                    ? (value) {
+                        field.didChange(value);
+                        setState(() {
+                          groupValue = value;
+                        });
+                      }
+                    : null,
+              );
+            }).toList(),
           ),
         );
       },
@@ -78,7 +75,7 @@ class _RadioOption<T> extends StatelessWidget {
   /// [option] must not be null. [onChanged] is called when the user selects this option.
   const _RadioOption({
     super.key,
-    this.groupValue,
+    required this.groupValue,
     required this.option,
     required this.onChanged,
   });
@@ -90,23 +87,22 @@ class _RadioOption<T> extends StatelessWidget {
   final T? groupValue;
 
   /// Called when the radio option is selected, if it is not disabled.
-  final ValueChanged<T?> onChanged;
+  final ValueChanged<T?>? onChanged;
 
   @override
   Widget build(BuildContext context) {
-    final bool isDisabled = option.disabled;
-    // The entire row (including radio and label) is tappable.
+    final bool isDisabled = option.disabled || onChanged == null;
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: isDisabled
           ? null
           : () {
-              onChanged(option.value);
+              onChanged?.call(option.value);
             },
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Radio.adaptive(value: option.value),
+          Radio<T>.adaptive(value: option.value),
           const SizedBox(width: 6),
           Flexible(child: Text(option.label)),
         ],

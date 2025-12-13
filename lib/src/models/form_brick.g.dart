@@ -55,13 +55,12 @@ const _$FormBrickTypeEnumMap = {
   FormBrickType.password: 'PASSWORD',
   FormBrickType.radio: 'RADIO',
   FormBrickType.toggle: 'TOGGLE',
-  FormBrickType.checkbox: 'CHECKBOX',
-  FormBrickType.date: 'DATE',
-  FormBrickType.time: 'TIME',
-  FormBrickType.dateTime: 'DATETIME',
   FormBrickType.multiSelect: 'MULTISELECT',
   FormBrickType.dropdown: 'DROPDOWN',
   FormBrickType.multiSelectDropdown: 'MULTISELECT_DROPDOWN',
+  FormBrickType.date: 'DATE',
+  FormBrickType.time: 'TIME',
+  FormBrickType.dateTime: 'DATETIME',
   FormBrickType.multimedia: 'MULTIMEDIA',
 };
 
