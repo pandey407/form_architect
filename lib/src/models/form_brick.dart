@@ -18,6 +18,10 @@ enum FormBrickType {
   @JsonValue('TEXTAREA')
   textArea,
 
+  /// A field for entering passwords (input is obscured).
+  @JsonValue('PASSWORD')
+  password,
+
   /// A number input field for floating point numerical values.
   @JsonValue('FLOAT')
   float,
@@ -25,10 +29,6 @@ enum FormBrickType {
   /// A number input field for integer values.
   @JsonValue('INTEGER')
   integer,
-
-  /// A field for entering passwords (input is obscured).
-  @JsonValue('PASSWORD')
-  password,
 
   /// A single-select radio button field.
   @JsonValue('RADIO')
@@ -38,16 +38,12 @@ enum FormBrickType {
   @JsonValue('TOGGLE')
   toggle,
 
-  /// A multi-select field, allowing selection of multiple options.
-  @JsonValue('MULTISELECT')
-  multiSelect,
-
   /// A single-select dropdown field.
-  @JsonValue('DROPDOWN')
-  dropdown,
+  @JsonValue('SINGLE_SELECT_DROPDOWN')
+  singleSelectdropdown,
 
   /// A multi-select dropdown field.
-  @JsonValue('MULTISELECT_DROPDOWN')
+  @JsonValue('MULTI_SELECT_DROPDOWN')
   multiSelectDropdown,
 
   /// A date selector field.
@@ -90,6 +86,11 @@ class FormBrick<T> extends FormElement {
   /// Default or initial value for the field.
   final T? value;
 
+  /// The selected values for multi-select fields.
+  ///
+  /// Only used for [FormBrickType.multiSelectDropdown] to hold the selected values.
+  final List<T>? values;
+
   /// List of options for selection-type bricks (radio, dropdown, multiSelect, etc.).
   ///
   /// Null for non-selection bricks like text, date, etc.
@@ -112,6 +113,7 @@ class FormBrick<T> extends FormElement {
     this.label,
     this.hint,
     this.value,
+    this.values,
     this.options,
     this.validation,
     this.isEnabled = true,

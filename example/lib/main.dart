@@ -35,6 +35,17 @@ class _MyHomePageState extends State<MyHomePage> {
   // This will hold field values as the user fills the form
   Map<String, dynamic> formValues = {};
 
+  // Reusable options for dropdown and radio bricks
+  final List<FormBrickOption<String>> animalOptions = <String>[
+    "Dog",
+    "Cat",
+    "Cow",
+    "Crow",
+    "Snake",
+    "Pig",
+    "Ox",
+  ].map((e) => FormBrickOption(value: e.toLowerCase(), label: e)).toList();
+
   @override
   void initState() {
     super.initState();
@@ -84,16 +95,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 brick: FormBrick(
                   key: 'haha',
                   type: FormBrickType.radio,
-                  value: "Dog",
-                  options: <String>[
-                    "Dog",
-                    "Cat",
-                    "Cow",
-                    "Crow",
-                    "Snake",
-                    "Pig",
-                    "Ox",
-                  ].map((e) => FormBrickOption(value: e, label: e)).toList(),
+                  value: "dog",
+                  options: animalOptions,
                 ),
               ),
               ToggleBrick(
@@ -105,6 +108,24 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               SizedBox(height: 20),
+              SingleSelectDropdownBrick(
+                brick: FormBrick<String>(
+                  key: 'single-select',
+                  hint: "Select one animal",
+                  type: FormBrickType.singleSelectdropdown,
+                  options: animalOptions,
+                ),
+              ),
+              SizedBox(height: 20),
+              MultiSelectDropdownBrick(
+                brick: FormBrick<String>(
+                  key: 'multi-select',
+                  hint: "Select multiple animals",
+                  type: FormBrickType.singleSelectdropdown,
+                  options: animalOptions,
+                  values: ['cow', 'cat'],
+                ),
+              ),
             ],
           ),
         ),

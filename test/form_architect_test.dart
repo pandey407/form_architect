@@ -30,7 +30,7 @@ void main() {
   debugPrint('=== Test 2: FormBrick with Options ===');
   final countryBrick = FormBrick<String>(
     key: 'country',
-    type: FormBrickType.dropdown,
+    type: FormBrickType.singleSelectdropdown,
     label: 'Country',
     hint: 'Select your country',
     value: 'US',
@@ -182,7 +182,7 @@ void main() {
   debugPrint('=== Test 6: Multi-select with List ===');
   final interestsBrick = FormBrick<List<String>>(
     key: 'interests',
-    type: FormBrickType.multiSelect,
+    type: FormBrickType.multiSelectDropdown,
     label: 'Interests',
     value: ['sports', 'music'],
     options: [
