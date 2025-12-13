@@ -1,8 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:form_architect/src/models/form_brick.dart';
 
+/// [RadioBrick] is a form field widget for selecting a single value from a group of options using radio buttons.
+///
+/// It renders the set of provided options as a horizontal or wrapped list of radio buttons, using the
+/// [FormBrick.options] for configuration. The currently selected value is held in [FormBrick.value].
+///
+/// The widget is enabled/disabled by [FormBrick.isEnabled]. Each option can also be disabled at the option level.
+/// When a radio button is selected, its value is set into the form field and triggers a rebuild.
+///
+/// Type parameter [T] denotes the type of the option values.
+///
+/// Example:
+/// ```dart
+/// RadioBrick<String>(
+///   brick: FormBrick<String>(
+///     key: 'favorite_animal',
+///     label: 'Favorite Animal',
+///     type: FormBrickType.radio,
+///     value: 'cat',
+///     options: [
+///       FormBrickOption(value: 'dog', label: 'Dog'),
+///       FormBrickOption(value: 'cat', label: 'Cat'),
+///     ],
+///   ),
+/// )
+/// ```
 class RadioBrick<T> extends StatefulWidget {
+  /// Creates a [RadioBrick] that displays a group of radio buttons for a [FormBrick].
   const RadioBrick({super.key, required this.brick});
+
+  /// The [FormBrick] definition, including value, options, key, etc.
   final FormBrick<T> brick;
 
   @override

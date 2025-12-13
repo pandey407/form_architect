@@ -3,19 +3,34 @@ import 'package:flutter/services.dart';
 import 'package:form_architect/src/models/form_brick.dart';
 import 'package:form_architect/src/utils/text_formatter.dart';
 
-/// A versatile text input widget that handles text, textarea, password, and number input types.
+/// [TextBrick] is a form field widget for text, textarea, password, and number input types.
 ///
-/// This widget adapts its behavior based on the [FormBrickType]:
+/// It adapts its behavior and appearance based on the [FormBrickType] of the given [FormBrick], supporting:
 /// - [FormBrickType.text]: Standard single-line text input
 /// - [FormBrickType.textArea]: Multi-line text input
-/// - [FormBrickType.password]: Obscured text input with visibility toggle
-/// - [FormBrickType.integer]: Integer input with keyboard restrictions
-/// - [FormBrickType.float]: Float type input with keyboard restrictions
-
+/// - [FormBrickType.password]: Obscured text input with a visibility toggle
+/// - [FormBrickType.integer]: Integer input with numeric keyboard and restrictions
+/// - [FormBrickType.float]: Floating-point number input with numeric keyboard and restrictions
+///
+/// The widget is enabled/disabled via [FormBrick.isEnabled]. Labels and hints are displayed via the configuration.
+/// Field value changes are handled by the widget using a [TextEditingController].
+///
+/// Example usage:
+/// ```dart
+/// TextBrick(
+///   brick: FormBrick(
+///     key: 'description',
+///     label: 'Description',
+///     type: FormBrickType.textArea,
+///     value: '',
+///   ),
+/// )
+/// ```
 class TextBrick extends StatefulWidget {
-  /// The FormBrick configuration for this text field
+  /// The [FormBrick] definition for this text field.
   final FormBrick brick;
 
+  /// Creates a [TextBrick] for the provided [FormBrick].
   const TextBrick({super.key, required this.brick});
 
   @override
@@ -72,8 +87,8 @@ class _TextBrickState extends State<TextBrick> {
     return null;
   }
 
-  /// Returns the maximum number of lines allowed for the TextFormField.
-  /// Returns `null` for text areas (unlimited lines), otherwise returns 1 for single-line input.
+  /// Returns the maximum number of lines for the input:
+  /// `null` for text areas, `1` for single-line fields.
   int? get _maxLines {
     if (_isTextArea) {
       return null;
@@ -81,8 +96,8 @@ class _TextBrickState extends State<TextBrick> {
     return 1;
   }
 
-  /// Returns the minimum number of lines for the TextFormField.
-  /// Returns 3 for text areas (making them taller initially), otherwise returns `null`.
+  /// Returns the minimum number of lines for the input:
+  /// `3` for text areas, otherwise `null`.
   int? get _minLines {
     if (_isTextArea) {
       return 3;
