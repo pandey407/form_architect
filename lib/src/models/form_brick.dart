@@ -107,6 +107,13 @@ class FormBrick<T> extends FormElement {
   /// Defaults to `true` if not specified.
   final bool isEnabled;
 
+  /// Optional range for date/time fields.
+  ///
+  /// Specifies the minimum and maximum allowed value for fields of type
+  /// [FormBrickType.date], [FormBrickType.time], or [FormBrickType.dateTime].
+  /// Should be a list with two [T] values: [min, max].
+  final List<T>? range;
+
   const FormBrick({
     required this.key,
     required this.type,
@@ -117,6 +124,7 @@ class FormBrick<T> extends FormElement {
     this.options,
     this.validation,
     this.isEnabled = true,
+    this.range,
     super.flex,
   });
 

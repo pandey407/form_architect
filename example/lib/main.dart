@@ -88,12 +88,17 @@ class _MyHomePageState extends State<MyHomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextBrick(
-                brick: FormBrick(key: 'name', type: FormBrickType.textArea),
+                brick: FormBrick(
+                  key: 'name',
+                  type: FormBrickType.text,
+                  label: "Name",
+                  hint: "Enter your name",
+                ),
               ),
               SizedBox(height: 20),
               RadioBrick(
                 brick: FormBrick(
-                  key: 'haha',
+                  key: 'radio',
                   type: FormBrickType.radio,
                   value: "dog",
                   options: animalOptions,
@@ -124,6 +129,19 @@ class _MyHomePageState extends State<MyHomePage> {
                   type: FormBrickType.singleSelectdropdown,
                   options: animalOptions,
                   values: ['cow', 'cat'],
+                ),
+              ),
+              SizedBox(height: 20),
+              DateTimeBrick(
+                brick: FormBrick(
+                  key: 'date',
+                  type: FormBrickType.dateTime,
+                  label: 'Select Date',
+                  value: DateTime.now(),
+                  range: [
+                    DateTime.now().subtract(Duration(days: 365)),
+                    DateTime.now().add(Duration(days: 365)),
+                  ],
                 ),
               ),
             ],

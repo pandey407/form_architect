@@ -15,6 +15,7 @@ FormBrick<T> _$FormBrickFromJson<T>(
   label: json['label'] as String?,
   hint: json['hint'] as String?,
   value: _$nullableGenericFromJson(json['value'], fromJsonT),
+  values: (json['values'] as List<dynamic>?)?.map(fromJsonT).toList(),
   options: (json['options'] as List<dynamic>?)
       ?.map(
         (e) => FormBrickOption<T>.fromJson(
@@ -27,6 +28,7 @@ FormBrick<T> _$FormBrickFromJson<T>(
       ?.map((e) => FormValidationRule.fromJson(e as Map<String, dynamic>))
       .toList(),
   isEnabled: json['isEnabled'] as bool? ?? true,
+  range: (json['range'] as List<dynamic>?)?.map(fromJsonT).toList(),
   flex: (json['flex'] as num?)?.toInt(),
 );
 
@@ -40,19 +42,21 @@ Map<String, dynamic> _$FormBrickToJson<T>(
   'label': ?instance.label,
   'hint': ?instance.hint,
   'value': ?_$nullableGenericToJson(instance.value, toJsonT),
+  'values': ?instance.values?.map(toJsonT).toList(),
   'options': ?instance.options
       ?.map((e) => e.toJson((value) => toJsonT(value)))
       .toList(),
   'validation': ?instance.validation,
   'isEnabled': instance.isEnabled,
+  'range': ?instance.range?.map(toJsonT).toList(),
 };
 
 const _$FormBrickTypeEnumMap = {
   FormBrickType.text: 'TEXT',
   FormBrickType.textArea: 'TEXTAREA',
+  FormBrickType.password: 'PASSWORD',
   FormBrickType.float: 'FLOAT',
   FormBrickType.integer: 'INTEGER',
-  FormBrickType.password: 'PASSWORD',
   FormBrickType.radio: 'RADIO',
   FormBrickType.toggle: 'TOGGLE',
   FormBrickType.singleSelectdropdown: 'SINGLE_SELECT_DROPDOWN',
