@@ -1,4 +1,5 @@
-import 'package:form_architect/src/model/form_element.dart';
+import 'package:form_architect/src/models/form_element.dart';
+import 'package:form_architect/src/models/form_validation_rule.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'form_brick.g.dart';
@@ -94,6 +95,11 @@ class FormBrick<T> extends FormElement {
   /// Null for non-selection bricks like text, date, etc.
   final List<FormBrickOption<T>>? options;
 
+  /// List of validation rules for the form brick.
+  ///
+  /// If null or empty, no validation is applied.
+  final List<FormValidationRule>? validation;
+
   const FormBrick({
     required this.key,
     required this.type,
@@ -101,6 +107,7 @@ class FormBrick<T> extends FormElement {
     this.hint,
     this.value,
     this.options,
+    this.validation,
     super.flex,
   });
 

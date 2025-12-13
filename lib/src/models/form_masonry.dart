@@ -1,5 +1,5 @@
-import 'package:form_architect/src/model/form_brick.dart';
-import 'package:form_architect/src/model/form_element.dart';
+import 'package:form_architect/src/models/form_brick.dart';
+import 'package:form_architect/src/models/form_element.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'form_masonry.g.dart';
 

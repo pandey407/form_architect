@@ -1,2 +1,2 @@
-export 'src/model/form_brick.dart';
-export 'src/model/form_masonry.dart';
+export 'src/models/form_brick.dart';
+export 'src/models/form_masonry.dart';

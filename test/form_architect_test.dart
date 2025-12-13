@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:form_architect/src/model/form_brick.dart';
-import 'package:form_architect/src/model/form_masonry.dart';
+import 'package:form_architect/src/models/form_brick.dart';
+import 'package:form_architect/src/models/form_masonry.dart';
 import 'dart:convert';
 
 void main() {
