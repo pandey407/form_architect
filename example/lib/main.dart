@@ -87,34 +87,54 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (_) => AlertDialog(
+              title: const Text("Form Data"),
+              content: Text(
+                formValues.entries
+                    .map((e) => "${e.key}: ${e.value}")
+                    .join("\n"),
+              ),
+              actions: [
+                TextButton(
+                  child: const Text("OK"),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ),
+          );
+        },
+        child: Text("Submit"),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (_) => AlertDialog(
-                      title: const Text("Form Data"),
-                      content: Text(
-                        formValues.entries
-                            .map((e) => "${e.key}: ${e.value}")
-                            .join("\n"),
-                      ),
-                      actions: [
-                        TextButton(
-                          child: const Text("OK"),
-                          onPressed: () => Navigator.of(context).pop(),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                child: const Text("Submit"),
+              TextBrick(
+                brick: FormBrick(key: 'name', type: FormBrickType.textArea),
+              ),
+              SizedBox(height: 20),
+              RadioBrick(
+                brick: FormBrick(
+                  key: 'haha',
+                  type: FormBrickType.radio,
+                  value: "Dog",
+                  options: <String>[
+                    "Dog",
+                    "Cat",
+                    "Cow",
+                    "Crow",
+                    "Snake",
+                    "Pig",
+                    "Ox",
+                  ].map((e) => FormBrickOption(value: e, label: e)).toList(),
+                ),
               ),
             ],
           ),

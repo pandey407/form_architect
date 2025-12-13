@@ -71,7 +71,7 @@ void main() {
 
   final ageBrick = FormBrick<int>(
     key: 'age',
-    type: FormBrickType.number,
+    type: FormBrickType.integer,
     label: 'Age',
     flex: 4,
   );

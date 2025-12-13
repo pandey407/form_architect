@@ -12,7 +12,7 @@ FormBrick<T> _$FormBrickFromJson<T>(
 ) => FormBrick<T>(
   key: json['key'] as String,
   type: $enumDecode(_$FormBrickTypeEnumMap, json['type']),
-  label: json['label'] as String,
+  label: json['label'] as String?,
   hint: json['hint'] as String?,
   value: _$nullableGenericFromJson(json['value'], fromJsonT),
   options: (json['options'] as List<dynamic>?)
@@ -26,6 +26,7 @@ FormBrick<T> _$FormBrickFromJson<T>(
   validation: (json['validation'] as List<dynamic>?)
       ?.map((e) => FormValidationRule.fromJson(e as Map<String, dynamic>))
       .toList(),
+  isEnabled: json['isEnabled'] as bool? ?? true,
   flex: (json['flex'] as num?)?.toInt(),
 );
 
@@ -36,29 +37,31 @@ Map<String, dynamic> _$FormBrickToJson<T>(
   'flex': ?instance.flex,
   'key': instance.key,
   'type': _$FormBrickTypeEnumMap[instance.type]!,
-  'label': instance.label,
+  'label': ?instance.label,
   'hint': ?instance.hint,
   'value': ?_$nullableGenericToJson(instance.value, toJsonT),
   'options': ?instance.options
       ?.map((e) => e.toJson((value) => toJsonT(value)))
       .toList(),
   'validation': ?instance.validation,
+  'isEnabled': instance.isEnabled,
 };
 
 const _$FormBrickTypeEnumMap = {
   FormBrickType.text: 'TEXT',
   FormBrickType.textArea: 'TEXTAREA',
-  FormBrickType.number: 'NUMBER',
+  FormBrickType.float: 'FLOAT',
+  FormBrickType.integer: 'INTEGER',
   FormBrickType.password: 'PASSWORD',
+  FormBrickType.radio: 'RADIO',
+  FormBrickType.toggle: 'TOGGLE',
+  FormBrickType.checkbox: 'CHECKBOX',
   FormBrickType.date: 'DATE',
   FormBrickType.time: 'TIME',
   FormBrickType.dateTime: 'DATETIME',
-  FormBrickType.radio: 'RADIO',
   FormBrickType.multiSelect: 'MULTISELECT',
   FormBrickType.dropdown: 'DROPDOWN',
   FormBrickType.multiSelectDropdown: 'MULTISELECT_DROPDOWN',
-  FormBrickType.toggle: 'TOGGLE',
-  FormBrickType.checkbox: 'CHECKBOX',
   FormBrickType.multimedia: 'MULTIMEDIA',
 };
 

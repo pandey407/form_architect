@@ -18,13 +18,29 @@ enum FormBrickType {
   @JsonValue('TEXTAREA')
   textArea,
 
-  /// A number input field for numerical values.
-  @JsonValue('NUMBER')
-  number,
+  /// A number input field for floating point numerical values.
+  @JsonValue('FLOAT')
+  float,
+
+  /// A number input field for integer values.
+  @JsonValue('INTEGER')
+  integer,
 
   /// A field for entering passwords (input is obscured).
   @JsonValue('PASSWORD')
   password,
+
+  /// A single-select radio button field.
+  @JsonValue('RADIO')
+  radio,
+
+  /// A toggle (switch) field, typically for boolean input.
+  @JsonValue('TOGGLE')
+  toggle,
+
+  /// A checkbox field, typically for boolean input.
+  @JsonValue('CHECKBOX')
+  checkbox,
 
   /// A date selector field.
   @JsonValue('DATE')
@@ -38,10 +54,6 @@ enum FormBrickType {
   @JsonValue('DATETIME')
   dateTime,
 
-  /// A single-select radio button field.
-  @JsonValue('RADIO')
-  radio,
-
   /// A multi-select field, allowing selection of multiple options.
   @JsonValue('MULTISELECT')
   multiSelect,
@@ -53,14 +65,6 @@ enum FormBrickType {
   /// A multi-select dropdown field.
   @JsonValue('MULTISELECT_DROPDOWN')
   multiSelectDropdown,
-
-  /// A toggle (switch) field, typically for boolean input.
-  @JsonValue('TOGGLE')
-  toggle,
-
-  /// A checkbox field, typically for boolean input.
-  @JsonValue('CHECKBOX')
-  checkbox,
 
   /// A field for multimedia content (images, videos, etc.).
   @JsonValue('MULTIMEDIA')
@@ -81,8 +85,8 @@ class FormBrick<T> extends FormElement {
   /// The type of form brick to build.
   final FormBrickType type;
 
-  /// Display label shown to the user above the field.
-  final String label;
+  /// Optional Display label shown to the user above the field.
+  final String? label;
 
   /// Optional hint text providing additional context or guidance.
   final String? hint;
@@ -100,14 +104,21 @@ class FormBrick<T> extends FormElement {
   /// If null or empty, no validation is applied.
   final List<FormValidationRule>? validation;
 
+  /// Whether this form field is enabled (interactive).
+  ///
+  /// If `false`, the field will be disabled and the user cannot interact with it.
+  /// Defaults to `true` if not specified.
+  final bool isEnabled;
+
   const FormBrick({
     required this.key,
     required this.type,
-    required this.label,
+    this.label,
     this.hint,
     this.value,
     this.options,
     this.validation,
+    this.isEnabled = true,
     super.flex,
   });
 
