@@ -90,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
               TextBrick(
                 brick: FormBrick(
                   key: 'name',
-                  type: FormBrickType.text,
+                  type: FormBrickType.textArea,
                   label: "Name",
                   hint: "Enter your name",
                 ),
@@ -126,7 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 brick: FormBrick<String>(
                   key: 'multi-select',
                   hint: "Select multiple animals",
-                  type: FormBrickType.singleSelectdropdown,
+                  type: FormBrickType.multiSelectDropdown,
                   options: animalOptions,
                   values: ['cow', 'cat'],
                 ),

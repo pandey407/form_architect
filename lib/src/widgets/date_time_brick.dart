@@ -30,22 +30,22 @@ class _DateTimeBrickState extends State<DateTimeBrick> {
     return _parseDateTime(val) ?? DateTime.now();
   }
 
-  DateTime? get minDateTime {
+  DateTime get minDateTime {
+    final defaultMinDateTime = initialDateTime.subtract(Duration(days: 365));
     final range = widget.brick.range;
     if (range != null && range.length == 2) {
-      return _parseDateTime(range[0]) ??
-          initialDateTime.subtract(Duration(days: 365));
+      return _parseDateTime(range[0]) ?? defaultMinDateTime;
     }
-    return null;
+    return defaultMinDateTime;
   }
 
-  DateTime? get maxDateTime {
+  DateTime get maxDateTime {
+    final defaultMaxDateTime = initialDateTime.subtract(Duration(days: 365));
     final range = widget.brick.range;
     if (range != null && range.length == 2) {
-      return _parseDateTime(range[1]) ??
-          initialDateTime.add(Duration(days: 365));
+      return _parseDateTime(range[1]) ?? defaultMaxDateTime;
     }
-    return null;
+    return defaultMaxDateTime;
   }
 
   String get displayValue {
@@ -76,11 +76,10 @@ class _DateTimeBrickState extends State<DateTimeBrick> {
             if (widget.brick.type == FormBrickType.date ||
                 widget.brick.type == FormBrickType.dateTime)
               CupertinoCalendarPickerButton(
-                minimumDateTime: minDateTime ?? DateTime.now(),
+                minimumDateTime: minDateTime,
                 initialDateTime: value,
                 use24hFormat: false,
-                maximumDateTime:
-                    maxDateTime ?? DateTime.now().add(Duration(days: 365)),
+                maximumDateTime: maxDateTime,
                 mode: widget.brick.type == FormBrickType.date
                     ? CupertinoCalendarMode.date
                     : CupertinoCalendarMode.dateTime,
