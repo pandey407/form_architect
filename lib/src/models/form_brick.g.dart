@@ -64,7 +64,9 @@ const _$FormBrickTypeEnumMap = {
   FormBrickType.date: 'DATE',
   FormBrickType.time: 'TIME',
   FormBrickType.dateTime: 'DATETIME',
-  FormBrickType.multimedia: 'MULTIMEDIA',
+  FormBrickType.image: 'IMAGE',
+  FormBrickType.video: 'VIDEO',
+  FormBrickType.file: 'FILE',
 };
 
 T? _$nullableGenericFromJson<T>(

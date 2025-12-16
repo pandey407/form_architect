@@ -58,9 +58,17 @@ enum FormBrickType {
   @JsonValue('DATETIME')
   dateTime,
 
-  /// A field for multimedia content (images, videos, etc.).
-  @JsonValue('MULTIMEDIA')
-  multimedia,
+  /// A field for images content
+  @JsonValue('IMAGE')
+  image,
+
+  /// A field for videos
+  @JsonValue('VIDEO')
+  video,
+
+  /// A field for other files (other than image and video)
+  @JsonValue('FILE')
+  file,
 }
 
 /// A [FormBrick] configures how a single [FormBrickType] should be built and rendered.

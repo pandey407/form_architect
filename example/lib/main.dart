@@ -144,6 +144,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
               ),
+              FileBrick(
+                brick: FormBrick(
+                  key: "file",
+                  type: FormBrickType.image,
+                  label: "Select file",
+                ),
+              ),
             ],
           ),
         ),
