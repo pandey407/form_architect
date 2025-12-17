@@ -63,7 +63,7 @@ const _$FormBrickTypeEnumMap = {
   FormBrickType.multiSelectDropdown: 'MULTI_SELECT_DROPDOWN',
   FormBrickType.date: 'DATE',
   FormBrickType.time: 'TIME',
-  FormBrickType.dateTime: 'DATETIME',
+  FormBrickType.dateTime: 'DATE_TIME',
   FormBrickType.image: 'IMAGE',
   FormBrickType.video: 'VIDEO',
   FormBrickType.file: 'FILE',

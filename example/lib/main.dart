@@ -10,10 +10,47 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Input theme configuration
+    final inputDecorationTheme = InputDecorationTheme(
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(2.0)),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(2.0),
+        borderSide: const BorderSide(color: Colors.deepPurple),
+      ),
+      labelStyle: const TextStyle(color: Colors.deepPurple),
+      floatingLabelStyle: const TextStyle(
+        color: Colors.deepPurple,
+        fontWeight: FontWeight.bold,
+      ),
+      errorStyle: const TextStyle(
+        color: Colors.red,
+        fontWeight: FontWeight.bold,
+        fontSize: 12.0,
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(2.0),
+        borderSide: const BorderSide(color: Colors.red),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(2.0),
+        borderSide: const BorderSide(color: Colors.red, width: 2.0),
+      ),
+      filled: true,
+      fillColor: Colors.grey[50],
+      contentPadding: const EdgeInsets.symmetric(
+        vertical: 12.0,
+        horizontal: 16.0,
+      ),
+      hintStyle: TextStyle(color: Colors.grey[400]),
+      floatingLabelBehavior: FloatingLabelBehavior.always,
+      alignLabelWithHint: true,
+    );
+
     return MaterialApp(
       title: 'Form Architect From JSON Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        inputDecorationTheme: inputDecorationTheme,
       ),
       home: const MyHomePage(title: 'Form Architect Demo'),
     );
@@ -135,6 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
       "type": "DATE",
       "label": "Birth Date",
       "hint": "Select your birth date",
+      "value": "1988-02-08",
       "range": ["1900-01-01", "2025-12-31"]
     },
     {
@@ -145,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
     },
     {
       "key": "appointmentDateTime",
-      "type": "DATETIME",
+      "type": "DATE_TIME",
       "label": "Appointment Date & Time",
       "hint": "Select appointment date and time"
     },

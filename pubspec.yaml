@@ -11,6 +11,7 @@ dependencies:
   animated_custom_dropdown: ^3.1.1
   collection: ^1.19.1
   cupertino_calendar_picker: ^2.2.6
+  dropdown_textfield: ^1.2.0
   file_picker: ^10.3.7
   flutter:
     sdk: flutter

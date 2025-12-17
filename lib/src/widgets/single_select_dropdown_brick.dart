@@ -2,6 +2,7 @@ import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:form_architect/src/models/form_brick.dart';
+import 'package:form_architect/src/utils/custom_dropdown_theme_ext.dart';
 
 /// A form field widget for selecting a single value from a dropdown.
 ///
@@ -61,53 +62,62 @@ class _SingleSelectDropdownBrickState<T>
     return FormField<T>(
       initialValue: initialValue,
       enabled: widget.brick.isEnabled,
+      validator: (e) {
+        return "Error";
+      },
       builder: (FormFieldState<T> field) {
-        return CustomDropdown<FormBrickOption<T>>.searchRequest(
-          futureRequest: (query) async {
-            return options
-                .where(
-                  (e) => e.label.toLowerCase().contains(query.toLowerCase()),
-                )
-                .toList();
-          },
+        return EmptyInputDecorator(
+          child: CustomDropdown<FormBrickOption<T>>.searchRequest(
+            futureRequest: (query) async {
+              return options
+                  .where(
+                    (e) => e.label.toLowerCase().contains(query.toLowerCase()),
+                  )
+                  .toList();
+            },
 
-          /// Hint text for dropdown search/display.
-          hintText: widget.brick.hint,
+            decoration: Theme.of(context).customDropdownDecoration,
+            validator: (e) {
+              return "Error";
+            },
 
-          /// The item initially selected (if any).
-          initialItem: options.firstWhereOrNull((e) => e.value == initialValue),
+            /// Hint text for dropdown search/display.
+            hintText: widget.brick.hint,
 
-          /// The list of all available options.
-          items: options,
+            /// The item initially selected (if any).
+            initialItem: options.firstWhereOrNull(
+              (e) => e.value == initialValue,
+            ),
 
-          /// Builds a widget for each item in the dropdown list.
-          listItemBuilder: (context, item, isSelected, onItemSelect) {
-            return Text(item.label);
-          },
+            /// The list of all available options.
+            items: options,
 
-          /// Builds the dropdown's header; how the selected item appears in the field.
-          headerBuilder: (context, selectedItem, enabled) {
-            return Text(selectedItem.label);
-          },
+            /// Builds a widget for each item in the dropdown list.
+            listItemBuilder: (context, item, isSelected, onItemSelect) {
+              return Text(item.label);
+            },
 
-          /// Whether the dropdown is enabled for interaction.
-          enabled: widget.brick.isEnabled,
-          validateOnChange: true,
-          validator: (e) {
-            return "Error";
-          },
-          hideSelectedFieldWhenExpanded: true,
-          closeDropDownOnClearFilterSearch: true,
+            /// Builds the dropdown's header; how the selected item appears in the field.
+            headerBuilder: (context, selectedItem, enabled) {
+              return Text(selectedItem.label);
+            },
 
-          /// Handles value selection and updates form state.
-          onChanged: (FormBrickOption<T>? selectedOption) {
-            if (selectedOption == null) return;
-            final selectedValue = selectedOption.value;
-            setState(() {
-              initialValue = selectedValue;
-              field.didChange(selectedValue);
-            });
-          },
+            /// Whether the dropdown is enabled for interaction.
+            enabled: widget.brick.isEnabled,
+            validateOnChange: true,
+            hideSelectedFieldWhenExpanded: true,
+            closeDropDownOnClearFilterSearch: true,
+
+            /// Handles value selection and updates form state.
+            onChanged: (FormBrickOption<T>? selectedOption) {
+              if (selectedOption == null) return;
+              final selectedValue = selectedOption.value;
+              setState(() {
+                initialValue = selectedValue;
+                field.didChange(selectedValue);
+              });
+            },
+          ),
         );
       },
     );

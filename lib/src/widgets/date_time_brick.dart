@@ -42,7 +42,7 @@ class _DateTimeBrickState extends State<DateTimeBrick> {
   }
 
   DateTime get maxDateTime {
-    final defaultMaxDateTime = initialDateTime.subtract(Duration(days: 365));
+    final defaultMaxDateTime = initialDateTime.add(Duration(days: 365));
     final range = widget.brick.range;
     if (range != null && range.length == 2) {
       return _parseDateTime(range[1]) ?? defaultMaxDateTime;

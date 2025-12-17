@@ -28,15 +28,10 @@ class BrickError extends StatelessWidget {
         Theme.of(context).inputDecorationTheme.errorStyle ??
         TextStyle(color: errorColor);
 
-    Widget effectiveChild = child;
-    if (error != null && error.isNotEmpty) {
-      effectiveChild = DefaultTextStyle(style: errorStyle, child: child);
-    }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        effectiveChild,
+        child,
         if (error != null && error.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 4.0, left: 4.0),

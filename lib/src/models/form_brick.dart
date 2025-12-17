@@ -55,7 +55,7 @@ enum FormBrickType {
   time,
 
   /// A field for selecting both date and time.
-  @JsonValue('DATETIME')
+  @JsonValue('DATE_TIME')
   dateTime,
 
   /// A field for images content
