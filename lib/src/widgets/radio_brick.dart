@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:form_architect/src/models/form_brick.dart';
+import 'package:form_architect/src/widgets/brick_error.dart';
+import 'package:form_architect/src/widgets/external_brick_label.dart';
 
 /// [RadioBrick] is a form field widget for selecting a single value from a group of options using radio buttons.
 ///
@@ -53,34 +55,46 @@ class _RadioBrickState<T> extends State<RadioBrick<T>> {
       initialValue: widget.brick.value,
       enabled: widget.brick.isEnabled,
       autovalidateMode: AutovalidateMode.disabled,
+      validator: (val) {
+        return "Error";
+      },
       builder: (FormFieldState<T> field) {
-        return RadioGroup(
-          groupValue: field.value,
-          onChanged: (T? value) {
-            if (value == null) return;
-            if (!widget.brick.isEnabled) return;
-            field.didChange(value);
-            setState(() {
-              groupValue = value;
-            });
-          },
-          child: Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: options.map((option) {
-              return _RadioOption<T>(
+        return BrickError(
+          field: field,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              BrickLabel(brick: widget.brick),
+              RadioGroup(
                 groupValue: field.value,
-                option: option,
-                onChanged: widget.brick.isEnabled && !(option.disabled)
-                    ? (value) {
-                        field.didChange(value);
-                        setState(() {
-                          groupValue = value;
-                        });
-                      }
-                    : null,
-              );
-            }).toList(),
+                onChanged: (T? value) {
+                  if (value == null) return;
+                  if (!widget.brick.isEnabled) return;
+                  field.didChange(value);
+                  setState(() {
+                    groupValue = value;
+                  });
+                },
+                child: Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: options.map((option) {
+                    return _RadioOption<T>(
+                      groupValue: field.value,
+                      option: option,
+                      onChanged: widget.brick.isEnabled && !(option.disabled)
+                          ? (value) {
+                              field.didChange(value);
+                              setState(() {
+                                groupValue = value;
+                              });
+                            }
+                          : null,
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
           ),
         );
       },

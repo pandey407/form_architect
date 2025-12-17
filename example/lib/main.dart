@@ -91,6 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
       "key": "gender",
       "type": "RADIO",
       "label": "Gender",
+      "hint": "We'll help you connect",
       "options": [
         {"value": "male", "label": "Male"},
         {"value": "female", "label": "Female"},
@@ -101,6 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
       "key": "newsletter",
       "type": "TOGGLE",
       "label": "Subscribe to newsletter",
+      "hint": "Stay update with the latest",
       "value": false
     },
     {
@@ -175,6 +177,8 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(title: Text(widget.title)),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          final isValid = formKey.currentState?.validate() ?? false;
+          if (!isValid) return;
           showDialog(
             context: context,
             builder: (_) => AlertDialog(
@@ -195,15 +199,7 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         child: Icon(Icons.check),
       ),
-      body: FormArchitect(
-        json: formJson,
-        formKey: formKey,
-        onChanged: (values) {
-          setState(() {
-            formValues = values;
-          });
-        },
-      ),
+      body: FormArchitect(json: formJson, formKey: formKey),
     );
   }
 }

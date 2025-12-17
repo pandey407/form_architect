@@ -2,6 +2,8 @@ import 'package:cupertino_calendar_picker/cupertino_calendar_picker.dart';
 import 'package:form_architect/form_architect.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:form_architect/src/utils/date_time_ext.dart';
+import 'package:form_architect/src/widgets/brick_error.dart';
+import 'package:form_architect/src/widgets/external_brick_label.dart';
 import 'package:intl/intl.dart';
 
 class DateTimeBrick extends StatefulWidget {
@@ -67,54 +69,60 @@ class _DateTimeBrickState extends State<DateTimeBrick> {
     // Wrapped with FormField for form integration
     return FormField<DateTime>(
       initialValue: initialDateTime,
+      validator: (e) {
+        return "Error";
+      },
       builder: (field) {
         DateTime? value = selectedDateTime ?? field.value ?? initialDateTime;
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            if (widget.brick.label != null) Text(widget.brick.label!),
-            if (widget.brick.type == FormBrickType.date ||
-                widget.brick.type == FormBrickType.dateTime)
-              CupertinoCalendarPickerButton(
-                minimumDateTime: minDateTime,
-                initialDateTime: value,
-                use24hFormat: false,
-                maximumDateTime: maxDateTime,
-                mode: widget.brick.type == FormBrickType.date
-                    ? CupertinoCalendarMode.date
-                    : CupertinoCalendarMode.dateTime,
-                actions: [
-                  CancelCupertinoCalendarAction(),
-                  ConfirmCupertinoCalendarAction(),
-                ],
-                timeLabel: "Time",
-                onCompleted: (DateTime? dt) {
-                  setState(() {
-                    selectedDateTime = dt;
-                  });
-                  field.didChange(dt);
-                },
-              ),
-            if (widget.brick.type == FormBrickType.time)
-              CupertinoTimePickerButton(
-                use24hFormat: false,
-                initialTime: value.timeOfDay,
-                onTimeChanged: (timeOfDay) {
-                  final now = value;
-                  final newDateTime = DateTime(
-                    now.year,
-                    now.month,
-                    now.day,
-                    timeOfDay.hour,
-                    timeOfDay.minute,
-                  );
-                  setState(() {
-                    selectedDateTime = newDateTime;
-                  });
-                  field.didChange(newDateTime);
-                },
-              ),
-          ],
+        return BrickError(
+          field: field,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(flex: 2, child: BrickLabel(brick: widget.brick)),
+              if (widget.brick.type == FormBrickType.date ||
+                  widget.brick.type == FormBrickType.dateTime)
+                CupertinoCalendarPickerButton(
+                  minimumDateTime: minDateTime,
+                  initialDateTime: value,
+                  use24hFormat: false,
+                  maximumDateTime: maxDateTime,
+                  mode: widget.brick.type == FormBrickType.date
+                      ? CupertinoCalendarMode.date
+                      : CupertinoCalendarMode.dateTime,
+                  actions: [
+                    CancelCupertinoCalendarAction(),
+                    ConfirmCupertinoCalendarAction(),
+                  ],
+                  timeLabel: "Time",
+                  onCompleted: (DateTime? dt) {
+                    setState(() {
+                      selectedDateTime = dt;
+                    });
+                    field.didChange(dt);
+                  },
+                ),
+              if (widget.brick.type == FormBrickType.time)
+                CupertinoTimePickerButton(
+                  use24hFormat: false,
+                  initialTime: value.timeOfDay,
+                  onTimeChanged: (timeOfDay) {
+                    final now = value;
+                    final newDateTime = DateTime(
+                      now.year,
+                      now.month,
+                      now.day,
+                      timeOfDay.hour,
+                      timeOfDay.minute,
+                    );
+                    setState(() {
+                      selectedDateTime = newDateTime;
+                    });
+                    field.didChange(newDateTime);
+                  },
+                ),
+            ],
+          ),
         );
       },
     );

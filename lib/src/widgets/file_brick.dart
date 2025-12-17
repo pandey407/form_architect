@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:form_architect/form_architect.dart';
+import 'package:form_architect/src/widgets/external_brick_label.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
@@ -167,39 +168,7 @@ class _FileBrickState extends State<FileBrick> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Label
-        if (widget.brick.label != null)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 6),
-            child: Text(
-              widget.brick.label!,
-              style:
-                  theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color: theme.textTheme.bodyLarge?.color,
-                    fontSize: 14,
-                  ) ??
-                  TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
-                    color: Colors.grey[900],
-                  ),
-            ),
-          ),
-        // Hint
-        if (widget.brick.hint != null)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Text(
-              widget.brick.hint!,
-              style:
-                  theme.textTheme.bodySmall?.copyWith(
-                    color: theme.textTheme.bodySmall?.color,
-                    fontSize: 12,
-                  ) ??
-                  TextStyle(fontSize: 12, color: Colors.grey[600]),
-            ),
-          ),
+        BrickLabel(brick: widget.brick),
         // File area
         if (_selectedFiles.isEmpty)
           _buildAddButton()

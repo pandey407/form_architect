@@ -11,9 +11,6 @@ class FormArchitect extends StatefulWidget {
   /// JSON string or Map containing the form configuration
   final dynamic json;
 
-  /// Callback when any field value changes
-  final ValueChanged<Map<String, dynamic>>? onChanged;
-
   /// Form key for validation
   final GlobalKey<FormState>? formKey;
 
@@ -23,7 +20,6 @@ class FormArchitect extends StatefulWidget {
   const FormArchitect({
     super.key,
     required this.json,
-    this.onChanged,
     this.formKey,
     this.padding,
   });
@@ -147,11 +143,6 @@ class _FormArchitectState extends State<FormArchitect> {
       case FormBrickType.file:
         return FileBrick(brick: brick);
     }
-  }
-
-  /// Validates the form
-  bool validate() {
-    return _formKey.currentState?.validate() ?? false;
   }
 
   @override

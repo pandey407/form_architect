@@ -1,24 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:form_architect/src/models/form_brick.dart';
+import 'package:form_architect/src/widgets/brick_error.dart';
+import 'package:form_architect/src/widgets/external_brick_label.dart';
 
 /// [ToggleBrick] is a form field widget for boolean values, rendered as a toggle (switch).
 ///
-/// It renders a [SwitchListTile.adaptive] bound to the given [FormBrick<bool>].
-/// The label, current value, and enabled state are configured using the [FormBrick].
+/// It renders a [Switch] bound to the given [FormBrick<bool>], with a [BrickLabel] expanded beside it.
 ///
-/// When toggled by the user, the value is updated and reported to the [FormField].
-///
-/// Example usage:
-/// ```dart
-/// ToggleBrick(
-///   brick: FormBrick<bool>(
-///     key: 'accepted_terms',
-///     type: FormBrickType.toggle,
-///     label: 'Accept Terms & Conditions',
-///     value: false,
-///   ),
-/// )
-/// ```
 class ToggleBrick extends StatefulWidget {
   /// Creates a [ToggleBrick] for the given boolean [FormBrick].
   const ToggleBrick({super.key, required this.brick});
@@ -30,9 +18,7 @@ class ToggleBrick extends StatefulWidget {
   State<ToggleBrick> createState() => _ToggleBrickState();
 }
 
-/// State for [ToggleBrick]. Manages the toggle value and reactivity.
 class _ToggleBrickState extends State<ToggleBrick> {
-  /// The currently selected boolean value.
   late bool value;
 
   @override
@@ -41,22 +27,49 @@ class _ToggleBrickState extends State<ToggleBrick> {
     value = widget.brick.value ?? false;
   }
 
+  void _toggle(FormFieldState<bool> field) {
+    if (!widget.brick.isEnabled) return;
+    final newValue = !value;
+    setState(() {
+      value = newValue;
+      field.didChange(newValue);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return FormField<bool>(
       initialValue: value,
+      validator: (value) {
+        return "Error";
+      },
       builder: (FormFieldState<bool> field) {
-        return SwitchListTile.adaptive(
-          value: value,
-          onChanged: widget.brick.isEnabled
-              ? (bool newValue) {
-                  setState(() {
-                    value = newValue;
-                    field.didChange(newValue);
-                  });
-                }
-              : null,
-          title: Text(widget.brick.label ?? ""),
+        return BrickError(
+          field: field,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(8),
+            onTap: widget.brick.isEnabled ? () => _toggle(field) : null,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(child: BrickLabel(brick: widget.brick)),
+                  Switch(
+                    value: value,
+                    onChanged: widget.brick.isEnabled
+                        ? (bool newValue) {
+                            setState(() {
+                              value = newValue;
+                              field.didChange(newValue);
+                            });
+                          }
+                        : null,
+                  ),
+                ],
+              ),
+            ),
+          ),
         );
       },
     );
