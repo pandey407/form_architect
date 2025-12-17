@@ -24,7 +24,7 @@ class ToggleBrick extends StatefulWidget {
   const ToggleBrick({super.key, required this.brick});
 
   /// The [FormBrick] definition encapsulating label, value, enabled state, etc.
-  final FormBrick<bool> brick;
+  final FormBrick brick;
 
   @override
   State<ToggleBrick> createState() => _ToggleBrickState();

@@ -7,3 +7,4 @@ export 'src/widgets/single_select_dropdown_brick.dart';
 export 'src/widgets/multi_select_dropdown_brick.dart';
 export 'src/widgets/date_time_brick.dart';
 export 'src/widgets/file_brick.dart';
+export 'src/widgets/form_architect.dart';

@@ -28,36 +28,151 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-// A simple widget to render a "FormArchitect" form from JSON.
 class _MyHomePageState extends State<MyHomePage> {
-  final _formKey = GlobalKey<FormState>();
-
-  // This will hold field values as the user fills the form
+  final formKey = GlobalKey<FormState>();
   Map<String, dynamic> formValues = {};
 
-  // Reusable options for dropdown and radio bricks
-  final List<FormBrickOption<String>> animalOptions = <String>[
-    "Dog",
-    "Cat",
-    "Cow",
-    "Crow",
-    "Snake",
-    "Pig",
-    "Ox",
-  ].map((e) => FormBrickOption(value: e.toLowerCase(), label: e)).toList();
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  final String formJson = '''
+{
+  "type": "COL",
+  "spacing": 16,
+  "children": [
+    {
+      "key": "email",
+      "type": "TEXT",
+      "label": "Email Address",
+      "hint": "Enter your email",
+      "validation": [
+        {"type": "REQUIRED"},
+        {"type": "EMAIL"}
+      ]
+    },
+    {
+      "key": "bio",
+      "type": "TEXTAREA",
+      "label": "Biography",
+      "hint": "Tell us about yourself"
+    },
+    {
+      "key": "password",
+      "type": "PASSWORD",
+      "label": "Password",
+      "hint": "Enter a secure password",
+      "validation": [
+        {"type": "REQUIRED"},
+        {"type": "MIN", "value": 8}
+      ]
+    },
+    {
+      "type": "ROW",
+      "spacing": 12,
+      "children": [
+        {
+          "key": "age",
+          "type": "INTEGER",
+          "label": "Age",
+          "hint": "Your age",
+          "flex": 1,
+          "validation": [
+            {"type": "MIN", "value": 0},
+            {"type": "MAX", "value": 120}
+          ]
+        },
+        {
+          "key": "height",
+          "type": "FLOAT",
+          "label": "Height (m)",
+          "hint": "Your height in meters",
+          "flex": 1
+        }
+      ]
+    },
+    {
+      "key": "gender",
+      "type": "RADIO",
+      "label": "Gender",
+      "options": [
+        {"value": "male", "label": "Male"},
+        {"value": "female", "label": "Female"},
+        {"value": "other", "label": "Other"}
+      ]
+    },
+    {
+      "key": "newsletter",
+      "type": "TOGGLE",
+      "label": "Subscribe to newsletter",
+      "value": false
+    },
+    {
+      "key": "country",
+      "type": "SINGLE_SELECT_DROPDOWN",
+      "label": "Country",
+      "hint": "Select your country",
+      "options": [
+        {"value": "us", "label": "United States"},
+        {"value": "uk", "label": "United Kingdom"},
+        {"value": "ca", "label": "Canada"},
+        {"value": "au", "label": "Australia"}
+      ]
+    },
+    {
+      "key": "interests",
+      "type": "MULTI_SELECT_DROPDOWN",
+      "label": "Interests",
+      "hint": "Select your interests",
+      "options": [
+        {"value": "sports", "label": "Sports"},
+        {"value": "music", "label": "Music"},
+        {"value": "travel", "label": "Travel"},
+        {"value": "reading", "label": "Reading"},
+        {"value": "gaming", "label": "Gaming"}
+      ]
+    },
+    {
+      "key": "birthDate",
+      "type": "DATE",
+      "label": "Birth Date",
+      "hint": "Select your birth date",
+      "range": ["1900-01-01", "2025-12-31"]
+    },
+    {
+      "key": "preferredTime",
+      "type": "TIME",
+      "label": "Preferred Contact Time",
+      "hint": "When should we contact you?"
+    },
+    {
+      "key": "appointmentDateTime",
+      "type": "DATETIME",
+      "label": "Appointment Date & Time",
+      "hint": "Select appointment date and time"
+    },
+    {
+      "key": "profileImage",
+      "type": "IMAGE",
+      "label": "Profile Picture",
+      "hint": "Upload your profile picture"
+    },
+    {
+      "key": "introVideo",
+      "type": "VIDEO",
+      "label": "Introduction Video",
+      "hint": "Upload a short intro video"
+    },
+    {
+      "key": "resume",
+      "type": "FILE",
+      "label": "Resume",
+      "hint": "Upload your resume (PDF)"
+    }
+  ]
+}
+''';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(title: Text(widget.title)),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showDialog(
@@ -78,82 +193,16 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           );
         },
-        child: Text("Submit"),
+        child: Icon(Icons.check),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextBrick(
-                brick: FormBrick(
-                  key: 'name',
-                  type: FormBrickType.textArea,
-                  label: "Name",
-                  hint: "Enter your name",
-                ),
-              ),
-              SizedBox(height: 20),
-              RadioBrick(
-                brick: FormBrick(
-                  key: 'radio',
-                  type: FormBrickType.radio,
-                  value: "dog",
-                  options: animalOptions,
-                ),
-              ),
-              ToggleBrick(
-                brick: FormBrick<bool>(
-                  key: 'accepted_terms',
-                  type: FormBrickType.toggle,
-                  label: 'Accept Terms & Conditions',
-                  value: false,
-                ),
-              ),
-              SizedBox(height: 20),
-              SingleSelectDropdownBrick(
-                brick: FormBrick<String>(
-                  key: 'single-select',
-                  hint: "Select one animal",
-                  type: FormBrickType.singleSelectdropdown,
-                  options: animalOptions,
-                ),
-              ),
-              SizedBox(height: 20),
-              MultiSelectDropdownBrick(
-                brick: FormBrick<String>(
-                  key: 'multi-select',
-                  hint: "Select multiple animals",
-                  type: FormBrickType.multiSelectDropdown,
-                  options: animalOptions,
-                  values: ['cow', 'cat'],
-                ),
-              ),
-              SizedBox(height: 20),
-              DateTimeBrick(
-                brick: FormBrick(
-                  key: 'date',
-                  type: FormBrickType.dateTime,
-                  label: 'Select Date',
-                  value: DateTime.now(),
-                  range: [
-                    DateTime.now().subtract(Duration(days: 365)),
-                    DateTime.now().add(Duration(days: 365)),
-                  ],
-                ),
-              ),
-              FileBrick(
-                brick: FormBrick(
-                  key: "file",
-                  type: FormBrickType.image,
-                  label: "Select file",
-                ),
-              ),
-            ],
-          ),
-        ),
+      body: FormArchitect(
+        json: formJson,
+        formKey: formKey,
+        onChanged: (values) {
+          setState(() {
+            formValues = values;
+          });
+        },
       ),
     );
   }
