@@ -78,26 +78,8 @@ class _FileBrickState extends State<FileBrick> {
     }
   }
 
-  void _removeFile(int index) {
-    setState(() => _selectedFiles.removeAt(index));
-  }
-
-  String _getFileName(dynamic file) {
-    if (file is XFile) {
-      return file.name;
-    } else if (file is PlatformFile) {
-      return file.name;
-    }
-    return 'File';
-  }
-
-  String _getFileExtension(dynamic file) {
-    final name = _getFileName(file);
-    final dotIndex = name.lastIndexOf('.');
-    if (dotIndex != -1 && dotIndex < name.length - 1) {
-      return name.substring(dotIndex + 1).toUpperCase();
-    }
-    return '';
+  void _removeFile(dynamic file) {
+    setState(() => _selectedFiles.remove(file));
   }
 
   IconData get _typeIcon {
@@ -112,95 +94,9 @@ class _FileBrickState extends State<FileBrick> {
     return 'Add File';
   }
 
-  Widget _buildThumbnail(dynamic file, int index) {
-    Widget preview;
-
-    if (file is XFile && _isImage) {
-      preview = Image.file(
-        File(file.path),
-        fit: BoxFit.cover,
-        width: _thumbnailSize,
-        height: _thumbnailSize,
-      );
-    } else if (file is XFile && _isVideo) {
-      preview = Container(
-        color: Color(0xFF1a1a2e),
-        child: Center(
-          child: Icon(
-            Icons.play_circle_outline,
-            color: Colors.white70,
-            size: 28,
-          ),
-        ),
-      );
-    } else if (file is PlatformFile) {
-      final ext = _getFileExtension(file);
-      preview = Container(
-        color: Color(0xFFF5F5F5),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.description_outlined,
-              color: Color(0xFF666666),
-              size: 24,
-            ),
-            if (ext.isNotEmpty) ...[
-              SizedBox(height: 2),
-              Text(
-                ext,
-                style: TextStyle(
-                  fontSize: 9,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF888888),
-                ),
-              ),
-            ],
-          ],
-        ),
-      );
-    } else {
-      preview = Container(color: Color(0xFFF5F5F5));
-    }
-
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(
-          width: _thumbnailSize,
-          height: _thumbnailSize,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Color(0xFFE0E0E0)),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(7),
-            child: preview,
-          ),
-        ),
-        Positioned(
-          top: -6,
-          right: -6,
-          child: GestureDetector(
-            onTap: () => _removeFile(index),
-            child: Container(
-              width: 20,
-              height: 20,
-              decoration: BoxDecoration(
-                color: Color(0xFF444444),
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 1.5),
-              ),
-              child: Icon(Icons.close, size: 12, color: Colors.white),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildAddButton() {
     final isEmpty = _selectedFiles.isEmpty;
+    final theme = Theme.of(context);
 
     return GestureDetector(
       onTap: _pick,
@@ -209,9 +105,9 @@ class _FileBrickState extends State<FileBrick> {
         width: isEmpty ? double.infinity : _thumbnailSize,
         height: isEmpty ? null : _thumbnailSize,
         decoration: BoxDecoration(
-          color: Color(0xFFFAFAFA),
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Color(0xFFDDDDDD), width: 1.5),
+          border: Border.all(color: theme.dividerColor, width: 1.5),
         ),
         child: isEmpty
             ? Padding(
@@ -222,31 +118,51 @@ class _FileBrickState extends State<FileBrick> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(_typeIcon, size: 28, color: Color(0xFF888888)),
+                    Icon(
+                      _typeIcon,
+                      size: 28,
+                      color: theme.iconTheme.color ?? Colors.grey[600],
+                    ),
                     SizedBox(height: 6),
                     Text(
                       _typeLabel,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Color(0xFF666666),
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style:
+                          theme.textTheme.labelMedium?.copyWith(
+                            fontWeight: FontWeight.w500,
+                            color: theme.textTheme.bodyLarge?.color,
+                            fontSize: 13,
+                          ) ??
+                          TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey[700],
+                            fontWeight: FontWeight.w500,
+                          ),
                     ),
                     SizedBox(height: 2),
                     Text(
                       'Max $_maxFiles files',
-                      style: TextStyle(fontSize: 11, color: Color(0xFFAAAAAA)),
+                      style:
+                          theme.textTheme.bodySmall?.copyWith(
+                            color: theme.textTheme.bodySmall?.color,
+                            fontSize: 11,
+                          ) ??
+                          TextStyle(fontSize: 11, color: Colors.grey[400]),
                     ),
                   ],
                 ),
               )
-            : Icon(Icons.add, size: 24, color: Color(0xFF888888)),
+            : Icon(
+                Icons.add,
+                size: 24,
+                color: theme.iconTheme.color ?? Colors.grey[600],
+              ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -257,11 +173,17 @@ class _FileBrickState extends State<FileBrick> {
             padding: const EdgeInsets.only(bottom: 6),
             child: Text(
               widget.brick.label!,
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
-                color: Color(0xFF333333),
-              ),
+              style:
+                  theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: theme.textTheme.bodyLarge?.color,
+                    fontSize: 14,
+                  ) ??
+                  TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                    color: Colors.grey[900],
+                  ),
             ),
           ),
         // Hint
@@ -270,7 +192,12 @@ class _FileBrickState extends State<FileBrick> {
             padding: const EdgeInsets.only(bottom: 10),
             child: Text(
               widget.brick.hint!,
-              style: TextStyle(fontSize: 12, color: Color(0xFF888888)),
+              style:
+                  theme.textTheme.bodySmall?.copyWith(
+                    color: theme.textTheme.bodySmall?.color,
+                    fontSize: 12,
+                  ) ??
+                  TextStyle(fontSize: 12, color: Colors.grey[600]),
             ),
           ),
         // File area
@@ -291,7 +218,13 @@ class _FileBrickState extends State<FileBrick> {
                   ],
                   for (int i = 0; i < _selectedFiles.length; i++) ...[
                     if (i > 0) SizedBox(width: 10),
-                    _buildThumbnail(_selectedFiles[i], i),
+                    _ThumbnailWidget(
+                      file: _selectedFiles[i],
+                      isImage: _isImage,
+                      isVideo: _isVideo,
+                      thumbnailSize: _thumbnailSize,
+                      onRemove: _removeFile,
+                    ),
                   ],
                 ],
               ),
@@ -303,10 +236,140 @@ class _FileBrickState extends State<FileBrick> {
             padding: const EdgeInsets.only(top: 8),
             child: Text(
               '${_selectedFiles.length} of $_maxFiles files',
-              style: TextStyle(fontSize: 11, color: Color(0xFFAAAAAA)),
+              style:
+                  theme.textTheme.bodySmall?.copyWith(
+                    color: theme.textTheme.bodySmall?.color,
+                    fontSize: 11,
+                  ) ??
+                  TextStyle(fontSize: 11, color: Colors.grey[400]),
             ),
           ),
       ],
     );
+  }
+}
+
+class _ThumbnailWidget extends StatelessWidget {
+  final dynamic file;
+  final bool isImage;
+  final bool isVideo;
+  final double thumbnailSize;
+  final void Function(dynamic) onRemove;
+
+  const _ThumbnailWidget({
+    required this.file,
+    required this.isImage,
+    required this.isVideo,
+    required this.thumbnailSize,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    Widget preview;
+
+    if (file is XFile && isImage) {
+      preview = Image.file(
+        File(file.path),
+        fit: BoxFit.cover,
+        width: thumbnailSize,
+        height: thumbnailSize,
+      );
+    } else if (file is XFile && isVideo) {
+      preview = Container(
+        color: colorScheme.surfaceContainerHighest,
+        child: Center(
+          child: Icon(
+            Icons.play_circle_outline,
+            color: theme.iconTheme.color ?? Colors.white70,
+            size: 28,
+          ),
+        ),
+      );
+    } else if (file is PlatformFile) {
+      final ext = _getFileExtension(file);
+      preview = Container(
+        color: colorScheme.surfaceContainerHighest,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.description_outlined,
+              color: theme.iconTheme.color ?? Colors.grey[700],
+              size: 24,
+            ),
+            if (ext.isNotEmpty) ...[
+              SizedBox(height: 2),
+              Text(
+                ext,
+                style: TextStyle(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w600,
+                  color: theme.textTheme.bodySmall?.color ?? Colors.grey[600],
+                ),
+              ),
+            ],
+          ],
+        ),
+      );
+    } else {
+      preview = Container(color: colorScheme.surfaceContainerHighest);
+    }
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          width: thumbnailSize,
+          height: thumbnailSize,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: theme.dividerColor),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(7),
+            child: preview,
+          ),
+        ),
+        Positioned(
+          top: -6,
+          right: -6,
+          child: GestureDetector(
+            onTap: () => onRemove(file),
+            child: Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                color: colorScheme.onSurface,
+                shape: BoxShape.circle,
+                border: Border.all(color: colorScheme.surface, width: 1.5),
+              ),
+              child: Icon(Icons.close, size: 12, color: colorScheme.surface),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _getFileName(dynamic file) {
+    if (file is XFile) {
+      return file.name;
+    } else if (file is PlatformFile) {
+      return file.name;
+    }
+    return 'File';
+  }
+
+  String _getFileExtension(dynamic file) {
+    final name = _getFileName(file);
+    final dotIndex = name.lastIndexOf('.');
+    if (dotIndex != -1 && dotIndex < name.length - 1) {
+      return name.substring(dotIndex + 1).toUpperCase();
+    }
+    return '';
   }
 }
