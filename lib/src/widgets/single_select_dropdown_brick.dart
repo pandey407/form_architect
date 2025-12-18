@@ -63,9 +63,7 @@ class _SingleSelectDropdownBrickState<T>
     return FormField<T>(
       initialValue: initialValue,
       enabled: widget.brick.isEnabled,
-      validator: (e) {
-        return "Error";
-      },
+      validator: (value) => widget.brick.validate(value: value),
       builder: (FormFieldState<T> field) {
         final hasError = field.hasError && field.errorText != null;
         return BrickError(

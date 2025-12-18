@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:form_architect/src/models/form_brick.dart';
-import 'package:form_architect/src/utils/form_validation_helper.dart';
 import 'package:form_architect/src/utils/text_formatter.dart';
 
 /// [TextBrick] is a form field widget for text, textarea, password, and number input types.
@@ -118,11 +117,6 @@ class _TextBrickState extends State<TextBrick> {
     return null;
   }
 
-  /// Validates the text input using the brick's validation rules.
-  String? _validateInput(String? value) {
-    return FormValidationHelper.validate(value, widget.brick);
-  }
-
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -153,7 +147,7 @@ class _TextBrickState extends State<TextBrick> {
       textInputAction: _isTextArea
           ? TextInputAction.newline
           : TextInputAction.next,
-      validator: widget.brick.hasValidation ? _validateInput : null,
+      validator: (value) => widget.brick.validate(value: value),
     );
   }
 }

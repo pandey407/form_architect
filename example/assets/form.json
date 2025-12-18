@@ -23,7 +23,14 @@
             "key": "bio",
             "type": "TEXTAREA",
             "label": "Biography",
-            "hint": "Tell us about yourself"
+            "hint": "Tell us about yourself",
+            "validation": [
+                {
+                    "type": "MAX",
+                    "value": 60,
+                    "message": "Bio can be at most 60 character long"
+                }
+            ]
         },
         {
             "key": "password",
@@ -147,6 +154,12 @@
                     "value": "au",
                     "label": "Australia"
                 }
+            ],
+            "validation": [
+                {
+                    "type": "REQUIRED",
+                    "message": "Country is required"
+                }
             ]
         },
         {
@@ -174,6 +187,22 @@
                 {
                     "value": "gaming",
                     "label": "Gaming"
+                }
+            ],
+            "validation": [
+                {
+                    "type": "REQUIRED",
+                    "message": "Interests is required"
+                },
+                {
+                    "type": "MIN",
+                    "value": 2,
+                    "message": "Please select at least 2 interests"
+                },
+                {
+                    "type": "MAX",
+                    "value": 4,
+                    "message": "You can select up to 4 interests"
                 }
             ]
         },

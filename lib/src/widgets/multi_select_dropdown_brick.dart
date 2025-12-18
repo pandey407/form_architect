@@ -69,7 +69,7 @@ class _MultiSelectDropdownBrickState<T>
   Widget build(BuildContext context) {
     return FormField<List<T>>(
       initialValue: initialValue,
-      enabled: widget.brick.isEnabled,
+      validator: (values) => widget.brick.validate(values: values),
       builder: (FormFieldState<List<T>> field) {
         final hasError = field.hasError && field.errorText != null;
         return BrickError(

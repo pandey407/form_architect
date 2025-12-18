@@ -1,5 +1,6 @@
 import 'package:form_architect/src/models/form_element.dart';
 import 'package:form_architect/src/models/form_validation_rule.dart';
+import 'package:form_architect/src/utils/form_validation_helper.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'form_brick.g.dart';
@@ -69,6 +70,22 @@ enum FormBrickType {
   /// A field for other files (other than image and video)
   @JsonValue('FILE')
   file,
+}
+
+extension FormBrickTypeX on FormBrickType {
+  /// Returns true if the [FormBrickType] represents a text field (text or textArea).
+  bool get isTextBrickType => [
+    FormBrickType.text,
+    FormBrickType.password,
+    FormBrickType.textArea,
+  ].contains(this);
+
+  /// Returns true if the [FormBrickType] represents a numeric field (integer or float).
+  bool get isNumericBrickType =>
+      [FormBrickType.integer, FormBrickType.float].contains(this);
+
+  /// Returns true if this [FormBrickType] is a multi-select dropdown type field.
+  bool get isMultiSelectType => this == FormBrickType.multiSelectDropdown;
 }
 
 /// A [FormBrick] configures how a single [FormBrickType] should be built and rendered.
@@ -155,9 +172,44 @@ class FormBrick<T> extends FormElement {
     );
   }
 
-  /// Checks if this brick has any validation rules.
-  bool get hasValidation {
-    return validation != null && validation!.isNotEmpty;
+  /// Validates a value against the brick's validation rules.
+  ///
+  /// Automatically determines validation logic based on the brick type.
+  /// Returns the error message if validation fails, null otherwise.
+  ///
+  /// [value] - The value to validate (can be any type E)
+  String? validate<E>({E? value, List<E>? values}) {
+    final validationRules = validation;
+    if (validationRules == null || validationRules.isEmpty) {
+      return null;
+    }
+
+    // First check required validation (applies to all field types)
+    final requiredError = FormValidationHelper.validateRequired(
+      value: value,
+      values: values,
+      brick: this,
+    );
+    if (requiredError != null) {
+      return requiredError;
+    }
+
+    // For string-based fields, check min/max/pattern validations
+    if (value is String && type.isTextBrickType) {
+      return FormValidationHelper.validateTextRules(value, this);
+    }
+
+    // For numeric-based fields, check min/max/pattern validations
+    if (type.isNumericBrickType) {
+      return FormValidationHelper.validateNumericRules(value, this);
+    }
+
+    if (type.isMultiSelectType) {
+      return FormValidationHelper.validateMultiSelectRules(values, this);
+    }
+    // For selection fields (radio, dropdown), only required validation applies
+    // Other validation types don't apply to selection fields
+    return null;
   }
 }
 

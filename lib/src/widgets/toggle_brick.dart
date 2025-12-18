@@ -40,9 +40,6 @@ class _ToggleBrickState extends State<ToggleBrick> {
   Widget build(BuildContext context) {
     return FormField<bool>(
       initialValue: value,
-      validator: (value) {
-        return "Error";
-      },
       builder: (FormFieldState<bool> field) {
         return BrickError(
           field: field,
