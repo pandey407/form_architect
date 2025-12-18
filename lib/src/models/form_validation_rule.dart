@@ -7,10 +7,6 @@ enum FormValidationRuleType {
   @JsonValue('REQUIRED')
   required,
 
-  /// Value must be a valid email address.
-  @JsonValue('EMAIL')
-  email,
-
   /// Value must be greater than or equal to a minimum value.
   ///
   /// - For number fields: checks that number >= min.
@@ -50,7 +46,12 @@ class FormValidationRule {
   /// - For others (like [FormValidationRuleType.required]), this can be null.
   final dynamic value;
 
-  const FormValidationRule({required this.type, this.value});
+  /// The validation error message to show if this rule fails.
+  ///
+  /// If null, a default error message will be used.
+  final String? message;
+
+  const FormValidationRule({required this.type, this.value, this.message});
 
   factory FormValidationRule.fromJson(Map<String, dynamic> json) =>
       _$FormValidationRuleFromJson(json);

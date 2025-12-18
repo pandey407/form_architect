@@ -9,7 +9,7 @@
       "hint": "Enter your email",
       "validation": [
         {"type": "REQUIRED"},
-        {"type": "EMAIL"}
+        {"type": "PATTERN"}
       ]
     },
     {
