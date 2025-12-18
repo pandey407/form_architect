@@ -66,13 +66,18 @@ class IntegerTextInputFormatter extends TextInputFormatter {
       return newValue;
     }
 
+    // Explicitly reject decimal points for integer input
+    if (text.contains('.')) {
+      return oldValue;
+    }
+
     // Allow a single minus sign if negative values are permitted
     if (allowNegative && text == '-') {
       return newValue;
     }
 
     // Check that the input contains only digits (and possibly a leading minus sign)
-    final validIntegerPattern = allowNegative ? r'^-?\d*$' : r'^\d*$';
+    final validIntegerPattern = allowNegative ? r'^-?\d+$' : r'^\d+$';
     if (!RegExp(validIntegerPattern).hasMatch(text)) {
       return oldValue;
     }

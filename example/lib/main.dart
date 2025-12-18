@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:form_architect/form_architect.dart';
 
 void main() {
@@ -68,146 +69,24 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final formKey = GlobalKey<FormState>();
   Map<String, dynamic> formValues = {};
+  String formJson = '';
 
-  final String formJson = '''
-{
-  "type": "COL",
-  "spacing": 16,
-  "children": [
-    {
-      "key": "email",
-      "type": "TEXT",
-      "label": "Email Address",
-      "hint": "Enter your email",
-      "validation": [
-        {"type": "REQUIRED"},
-        {"type": "EMAIL"}
-      ]
-    },
-    {
-      "key": "bio",
-      "type": "TEXTAREA",
-      "label": "Biography",
-      "hint": "Tell us about yourself"
-    },
-    {
-      "key": "password",
-      "type": "PASSWORD",
-      "label": "Password",
-      "hint": "Enter a secure password",
-      "validation": [
-        {"type": "REQUIRED"},
-        {"type": "MIN", "value": 8}
-      ]
-    },
-    {
-      "type": "ROW",
-      "spacing": 12,
-      "children": [
-        {
-          "key": "age",
-          "type": "INTEGER",
-          "label": "Age",
-          "hint": "Your age",
-          "flex": 1,
-          "validation": [
-            {"type": "MIN", "value": 0},
-            {"type": "MAX", "value": 120}
-          ]
-        },
-        {
-          "key": "height",
-          "type": "FLOAT",
-          "label": "Height (m)",
-          "hint": "Your height in meters",
-          "flex": 1
-        }
-      ]
-    },
-    {
-      "key": "gender",
-      "type": "RADIO",
-      "label": "Gender",
-      "hint": "We'll help you connect",
-      "options": [
-        {"value": "male", "label": "Male"},
-        {"value": "female", "label": "Female"},
-        {"value": "other", "label": "Other"}
-      ]
-    },
-    {
-      "key": "newsletter",
-      "type": "TOGGLE",
-      "label": "Subscribe to newsletter",
-      "hint": "Stay update with the latest",
-      "value": false
-    },
-    {
-      "key": "country",
-      "type": "SINGLE_SELECT_DROPDOWN",
-      "label": "Country",
-      "hint": "Select your country",
-      "options": [
-        {"value": "us", "label": "United States"},
-        {"value": "uk", "label": "United Kingdom"},
-        {"value": "ca", "label": "Canada"},
-        {"value": "au", "label": "Australia"}
-      ]
-    },
-    {
-      "key": "interests",
-      "type": "MULTI_SELECT_DROPDOWN",
-      "label": "Interests",
-      "hint": "Select your interests",
-      "options": [
-        {"value": "sports", "label": "Sports"},
-        {"value": "music", "label": "Music"},
-        {"value": "travel", "label": "Travel"},
-        {"value": "reading", "label": "Reading"},
-        {"value": "gaming", "label": "Gaming"}
-      ]
-    },
-    {
-      "key": "birthDate",
-      "type": "DATE",
-      "label": "Birth Date",
-      "hint": "Select your birth date",
-      "value": "1988-02-08",
-      "range": ["1900-01-01", "2025-12-31"]
-    },
-    {
-      "key": "preferredTime",
-      "type": "TIME",
-      "label": "Preferred Contact Time",
-      "hint": "When should we contact you?"
-    },
-    {
-      "key": "appointmentDateTime",
-      "type": "DATE_TIME",
-      "label": "Appointment Date & Time",
-      "hint": "Select appointment date and time"
-    },
-    {
-      "key": "profileImage",
-      "type": "IMAGE",
-      "label": "Profile Picture",
-      "hint": "Upload your profile picture"
-    },
-    {
-      "key": "introVideo",
-      "type": "VIDEO",
-      "label": "Introduction Video",
-      "hint": "Upload a short intro video"
-    },
-    {
-      "key": "resume",
-      "type": "FILE",
-      "label": "Resume",
-      "hint": "Upload your resume (PDF)"
+  @override
+  void initState() {
+    super.initState();
+    _loadFormJson();
+  }
+
+  Future<void> _loadFormJson() async {
+    try {
+      final String jsonString = await rootBundle.loadString('assets/form.json');
+      setState(() {
+        formJson = jsonString;
+      });
+    } catch (e) {
+      debugPrint('Error loading form JSON: $e');
     }
-  ]
-}
-''';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -237,7 +116,9 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         child: Icon(Icons.check),
       ),
-      body: FormArchitect(json: formJson, formKey: formKey),
+      body: formJson.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : FormArchitect(json: formJson, formKey: formKey),
     );
   }
 }

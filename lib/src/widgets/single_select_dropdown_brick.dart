@@ -105,7 +105,6 @@ class _SingleSelectDropdownBrickState<T>
             /// Whether the dropdown is enabled for interaction.
             enabled: widget.brick.isEnabled,
             validateOnChange: true,
-            hideSelectedFieldWhenExpanded: true,
             closeDropDownOnClearFilterSearch: true,
 
             /// Handles value selection and updates form state.

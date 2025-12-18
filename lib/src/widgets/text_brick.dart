@@ -45,8 +45,20 @@ class _TextBrickState extends State<TextBrick> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.brick.value ?? '');
+    _controller = TextEditingController(
+      text: _valueToString(widget.brick.value),
+    );
     _focusNode = FocusNode();
+  }
+
+  /// Converts the brick value to a string representation.
+  /// Handles int, double, String, and null values.
+  String _valueToString(dynamic value) {
+    if (value == null) return '';
+    if (value is int) return value.toString();
+    if (value is double) return value.toString();
+    if (value is String) return value;
+    return value.toString();
   }
 
   @override
