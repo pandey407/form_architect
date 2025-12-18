@@ -1,21 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_architect/src/models/form_brick.dart';
-import 'package:form_architect/src/utils/text_formatter.dart';
+import 'package:form_architect/src/utils/string_ext.dart';
 
-//TODO: Needs to emit string for string based and num for number based, maybe add a different form field entirely.
-/// [TextBrick] is a form field widget for text, textarea, password, and number input types.
+/// [TextBrick] is a form field widget for text, textarea, and password input types.
 ///
-/// It adapts its behavior and appearance based on the [FormBrickType] of the given [FormBrick], supporting:
+/// It supports:
 /// - [FormBrickType.text]: Standard single-line text input
 /// - [FormBrickType.textArea]: Multi-line text input
 /// - [FormBrickType.password]: Obscured text input with a visibility toggle
-/// - [FormBrickType.integer]: Integer input with numeric keyboard and restrictions
-/// - [FormBrickType.float]: Floating-point number input with numeric keyboard and restrictions
-///
-/// The widget is enabled/disabled via [FormBrick.isEnabled]. Labels and hints are displayed via the configuration.
-/// Field value changes are handled by the widget using a [TextEditingController].
 ///
 /// Example usage:
 /// ```dart
@@ -48,19 +41,9 @@ class _TextBrickState extends State<TextBrick> {
   void initState() {
     super.initState();
     _controller = TextEditingController(
-      text: _valueToString(widget.brick.value),
+      text: widget.brick.value?.toString() ?? '',
     );
     _focusNode = FocusNode();
-  }
-
-  /// Converts the brick value to a string representation.
-  /// Handles int, double, String, and null values.
-  String _valueToString(dynamic value) {
-    if (value == null) return '';
-    if (value is int) return value.toString();
-    if (value is double) return value.toString();
-    if (value is String) return value;
-    return value.toString();
   }
 
   @override
@@ -70,54 +53,18 @@ class _TextBrickState extends State<TextBrick> {
     super.dispose();
   }
 
-  bool get _isPassword => widget.brick.type == FormBrickType.password;
-  bool get _isTextArea => widget.brick.type == FormBrickType.textArea;
-  bool get _isIntegerNumber => widget.brick.type == FormBrickType.integer;
-  bool get _isFloatingNumber => widget.brick.type == FormBrickType.float;
+  bool get _isPassword => widget.brick.type.isPasswordType;
+  bool get _isTextArea => widget.brick.type.isTextAreaType;
 
   TextInputType get _keyboardType {
-    if (_isIntegerNumber) {
-      return const TextInputType.numberWithOptions(
-        decimal: false,
-        signed: true,
-      );
-    }
-    if (_isFloatingNumber) {
-      return const TextInputType.numberWithOptions(decimal: true, signed: true);
-    }
     if (_isTextArea) {
       return TextInputType.multiline;
     }
     return TextInputType.text;
   }
 
-  List<TextInputFormatter>? get _inputFormatters {
-    if (_isFloatingNumber) {
-      return [FloatingPointInputFormatter()];
-    }
-    if (_isIntegerNumber) {
-      return [IntegerTextInputFormatter()];
-    }
-    return null;
-  }
-
-  /// Returns the maximum number of lines for the input:
-  /// `null` for text areas, `1` for single-line fields.
-  int? get _maxLines {
-    if (_isTextArea) {
-      return null;
-    }
-    return 1;
-  }
-
-  /// Returns the minimum number of lines for the input:
-  /// `3` for text areas, otherwise `null`.
-  int? get _minLines {
-    if (_isTextArea) {
-      return 3;
-    }
-    return null;
-  }
+  int? get _maxLines => _isTextArea ? null : 1;
+  int? get _minLines => _isTextArea ? 3 : null;
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +90,6 @@ class _TextBrickState extends State<TextBrick> {
             : null,
       ),
       keyboardType: _keyboardType,
-      inputFormatters: _inputFormatters,
       obscureText: _isPassword && _obscurePassword,
       maxLines: _maxLines,
       minLines: _minLines,
@@ -151,6 +97,11 @@ class _TextBrickState extends State<TextBrick> {
           ? TextInputAction.newline
           : TextInputAction.next,
       validator: (value) => widget.brick.validate(value: value),
+      valueTransformer: (value) {
+        if (value == null || value.isEmpty) return null;
+        if (value.isWhiteSpace) return null;
+        return value;
+      },
     );
   }
 }

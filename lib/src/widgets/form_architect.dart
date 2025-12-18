@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_architect/form_architect.dart';
 import 'package:form_architect/src/models/form_element.dart';
+import 'package:form_architect/src/widgets/numeric_brick.dart';
 
 /// Main builder widget that constructs a complete form from JSON configuration.
 ///
@@ -34,7 +35,7 @@ class FormArchitectState extends State<FormArchitect> {
   Map<String, dynamic>? validateBricks() {
     final isValid = _formKey.currentState?.saveAndValidate() ?? false;
     debugPrint(isValid.toString());
-    // if (!isValid) return null;
+    if (!isValid) return null;
     final value = _formKey.currentState?.value;
     return value;
   }
@@ -117,9 +118,11 @@ class FormArchitectState extends State<FormArchitect> {
       case FormBrickType.text:
       case FormBrickType.textArea:
       case FormBrickType.password:
+        return TextBrick(brick: brick);
+
       case FormBrickType.integer:
       case FormBrickType.float:
-        return TextBrick(brick: brick);
+        return NumericBrick(brick: brick);
 
       case FormBrickType.radio:
         return RadioBrick(brick: brick);

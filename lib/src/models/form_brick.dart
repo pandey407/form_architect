@@ -80,9 +80,19 @@ extension FormBrickTypeX on FormBrickType {
     FormBrickType.textArea,
   ].contains(this);
 
+  /// Returns true if the [FormBrickType] represents a password field.
+  bool get isPasswordType => this == FormBrickType.password;
+
+  /// Returns true if the [FormBrickType] represents a text area field.
+  bool get isTextAreaType => this == FormBrickType.textArea;
+
   /// Returns true if the [FormBrickType] represents a numeric field (integer or float).
   bool get isNumericBrickType =>
       [FormBrickType.integer, FormBrickType.float].contains(this);
+
+  bool get isIntegerType => this == FormBrickType.integer;
+
+  bool get isFloatType => this == FormBrickType.float;
 
   /// Returns true if this [FormBrickType] is a multi-select dropdown type field.
   bool get isMultiSelectType => this == FormBrickType.multiSelectDropdown;
