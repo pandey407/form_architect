@@ -1,144 +1,222 @@
 {
-  "type": "COL",
-  "spacing": 16,
-  "children": [
-    {
-      "key": "email",
-      "type": "TEXT",
-      "label": "Email Address",
-      "hint": "Enter your email",
-      "validation": [
-        {"type": "REQUIRED", "message": "Email is required"},
-        {"type": "PATTERN", "value": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", "message": "Please enter a valid email address"}
-      ]
-    },
-    {
-      "key": "bio",
-      "type": "TEXTAREA",
-      "label": "Biography",
-      "hint": "Tell us about yourself"
-    },
-    {
-      "key": "password",
-      "type": "PASSWORD",
-      "label": "Password",
-      "hint": "Enter a secure password",
-      "validation": [
-        {"type": "REQUIRED", "message": "Password is required"},
-        {"type": "MIN", "value": 8, "message": "Password must be at least 8 characters long"},
-        {"type": "PATTERN", "value": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", "message": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"}
-      ]
-    },
-    {
-      "type": "ROW",
-      "spacing": 12,
-      "children": [
+    "type": "COL",
+    "spacing": 16,
+    "children": [
         {
-          "key": "age",
-          "type": "INTEGER",
-          "label": "Age",
-          "hint": "Your age",
-          "value": 15,
-          "flex": 1,
-          "validation": [
-            {"type": "MIN", "value": 0, "message": "Age must be at least 0"},
-            {"type": "MAX", "value": 50, "message": "Age must be atleast 50"}
-          ]
+            "key": "email",
+            "type": "TEXT",
+            "label": "Email Address",
+            "hint": "Enter your email",
+            "validation": [
+                {
+                    "type": "REQUIRED",
+                    "message": "Email is required"
+                },
+                {
+                    "type": "PATTERN",
+                    "value": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+                    "message": "Please enter a valid email address"
+                }
+            ]
         },
         {
-          "key": "height",
-          "type": "FLOAT",
-          "label": "Height (m)",
-          "hint": "Your height in meters",
-          "flex": 1,
-          "validation": [
-            {"type": "MIN", "value": 0, "message": "Height must be at least 0"},
-            {"type": "MAX", "value": 100.1, "message": "Height must be under 100.2"}
-          ]
+            "key": "bio",
+            "type": "TEXTAREA",
+            "label": "Biography",
+            "hint": "Tell us about yourself"
+        },
+        {
+            "key": "password",
+            "type": "PASSWORD",
+            "label": "Password",
+            "hint": "Enter a secure password",
+            "validation": [
+                {
+                    "type": "REQUIRED",
+                    "message": "Password is required"
+                },
+                {
+                    "type": "MIN",
+                    "value": 8,
+                    "message": "Password must be at least 8 characters long"
+                },
+                {
+                    "type": "PATTERN",
+                    "value": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
+                    "message": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+                }
+            ]
+        },
+        {
+            "type": "ROW",
+            "spacing": 12,
+            "children": [
+                {
+                    "key": "age",
+                    "type": "INTEGER",
+                    "label": "Age",
+                    "hint": "Your age",
+                    "value": 15,
+                    "flex": 1,
+                    "validation": [
+                        {
+                            "type": "MIN",
+                            "value": 0,
+                            "message": "Age must be at least 0"
+                        },
+                        {
+                            "type": "MAX",
+                            "value": 50,
+                            "message": "Age must be atleast 50"
+                        }
+                    ]
+                },
+                {
+                    "key": "height",
+                    "type": "FLOAT",
+                    "label": "Height (m)",
+                    "hint": "Your height in meters",
+                    "flex": 1,
+                    "validation": [
+                        {
+                            "type": "MIN",
+                            "value": 0,
+                            "message": "Height must be at least 0"
+                        },
+                        {
+                            "type": "MAX",
+                            "value": 100.1,
+                            "message": "Height must be under 100.2"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "gender",
+            "type": "RADIO",
+            "label": "Gender",
+            "hint": "We'll help you connect",
+            "options": [
+                {
+                    "value": "male",
+                    "label": "Male"
+                },
+                {
+                    "value": "female",
+                    "label": "Female"
+                },
+                {
+                    "value": "other",
+                    "label": "Other"
+                }
+            ],
+            "validation": [
+                {
+                    "type": "REQUIRED",
+                    "message": "Gender is required"
+                }
+            ]
+        },
+        {
+            "key": "newsletter",
+            "type": "TOGGLE",
+            "label": "Subscribe to newsletter",
+            "hint": "Stay update with the latest",
+            "value": false
+        },
+        {
+            "key": "country",
+            "type": "SINGLE_SELECT_DROPDOWN",
+            "label": "Country",
+            "hint": "Select your country",
+            "options": [
+                {
+                    "value": "us",
+                    "label": "United States"
+                },
+                {
+                    "value": "uk",
+                    "label": "United Kingdom"
+                },
+                {
+                    "value": "ca",
+                    "label": "Canada"
+                },
+                {
+                    "value": "au",
+                    "label": "Australia"
+                }
+            ]
+        },
+        {
+            "key": "interests",
+            "type": "MULTI_SELECT_DROPDOWN",
+            "label": "Interests",
+            "hint": "Select your interests",
+            "options": [
+                {
+                    "value": "sports",
+                    "label": "Sports"
+                },
+                {
+                    "value": "music",
+                    "label": "Music"
+                },
+                {
+                    "value": "travel",
+                    "label": "Travel"
+                },
+                {
+                    "value": "reading",
+                    "label": "Reading"
+                },
+                {
+                    "value": "gaming",
+                    "label": "Gaming"
+                }
+            ]
+        },
+        {
+            "key": "birthDate",
+            "type": "DATE",
+            "label": "Birth Date",
+            "hint": "Select your birth date",
+            "value": "1988-02-08",
+            "range": [
+                "1900-01-01",
+                "2025-12-31"
+            ]
+        },
+        {
+            "key": "preferredTime",
+            "type": "TIME",
+            "label": "Preferred Contact Time",
+            "hint": "When should we contact you?"
+        },
+        {
+            "key": "appointmentDateTime",
+            "type": "DATE_TIME",
+            "label": "Appointment Date & Time",
+            "hint": "Select appointment date and time"
+        },
+        {
+            "key": "profileImage",
+            "type": "IMAGE",
+            "label": "Profile Picture",
+            "hint": "Upload your profile picture"
+        },
+        {
+            "key": "introVideo",
+            "type": "VIDEO",
+            "label": "Introduction Video",
+            "hint": "Upload a short intro video"
+        },
+        {
+            "key": "resume",
+            "type": "FILE",
+            "label": "Resume",
+            "hint": "Upload your resume (PDF)"
         }
-      ]
-    },
-    {
-      "key": "gender",
-      "type": "RADIO",
-      "label": "Gender",
-      "hint": "We'll help you connect",
-      "options": [
-        {"value": "male", "label": "Male"},
-        {"value": "female", "label": "Female"},
-        {"value": "other", "label": "Other"}
-      ]
-    },
-    {
-      "key": "newsletter",
-      "type": "TOGGLE",
-      "label": "Subscribe to newsletter",
-      "hint": "Stay update with the latest",
-      "value": false
-    },
-    {
-      "key": "country",
-      "type": "SINGLE_SELECT_DROPDOWN",
-      "label": "Country",
-      "hint": "Select your country",
-      "options": [
-        {"value": "us", "label": "United States"},
-        {"value": "uk", "label": "United Kingdom"},
-        {"value": "ca", "label": "Canada"},
-        {"value": "au", "label": "Australia"}
-      ]
-    },
-    {
-      "key": "interests",
-      "type": "MULTI_SELECT_DROPDOWN",
-      "label": "Interests",
-      "hint": "Select your interests",
-      "options": [
-        {"value": "sports", "label": "Sports"},
-        {"value": "music", "label": "Music"},
-        {"value": "travel", "label": "Travel"},
-        {"value": "reading", "label": "Reading"},
-        {"value": "gaming", "label": "Gaming"}
-      ]
-    },
-    {
-      "key": "birthDate",
-      "type": "DATE",
-      "label": "Birth Date",
-      "hint": "Select your birth date",
-      "value": "1988-02-08",
-      "range": ["1900-01-01", "2025-12-31"]
-    },
-    {
-      "key": "preferredTime",
-      "type": "TIME",
-      "label": "Preferred Contact Time",
-      "hint": "When should we contact you?"
-    },
-    {
-      "key": "appointmentDateTime",
-      "type": "DATE_TIME",
-      "label": "Appointment Date & Time",
-      "hint": "Select appointment date and time"
-    },
-    {
-      "key": "profileImage",
-      "type": "IMAGE",
-      "label": "Profile Picture",
-      "hint": "Upload your profile picture"
-    },
-    {
-      "key": "introVideo",
-      "type": "VIDEO",
-      "label": "Introduction Video",
-      "hint": "Upload a short intro video"
-    },
-    {
-      "key": "resume",
-      "type": "FILE",
-      "label": "Resume",
-      "hint": "Upload your resume (PDF)"
-    }
-  ]
+    ]
 }
-

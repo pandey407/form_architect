@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:form_architect/src/models/form_brick.dart';
+import 'package:form_architect/src/utils/form_validation_helper.dart';
 import 'package:form_architect/src/widgets/brick_error.dart';
 import 'package:form_architect/src/widgets/external_brick_label.dart';
 
@@ -47,6 +48,11 @@ class _RadioBrickState<T> extends State<RadioBrick<T>> {
     groupValue = widget.brick.value;
   }
 
+  /// Validates the radio selection using the brick's validation rules.
+  String? _validateInput(T? value) {
+    return FormValidationHelper.validate(value, widget.brick);
+  }
+
   @override
   Widget build(BuildContext context) {
     final options = widget.brick.options;
@@ -55,9 +61,7 @@ class _RadioBrickState<T> extends State<RadioBrick<T>> {
       initialValue: widget.brick.value,
       enabled: widget.brick.isEnabled,
       autovalidateMode: AutovalidateMode.disabled,
-      validator: (val) {
-        return "Error";
-      },
+      validator: widget.brick.hasValidation ? _validateInput : null,
       builder: (FormFieldState<T> field) {
         return BrickError(
           field: field,

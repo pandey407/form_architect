@@ -154,6 +154,11 @@ class FormBrick<T> extends FormElement {
       (rule) => rule.type == FormValidationRuleType.required,
     );
   }
+
+  /// Checks if this brick has any validation rules.
+  bool get hasValidation {
+    return validation != null && validation!.isNotEmpty;
+  }
 }
 
 /// Represents a single option in a selection-type FormBrickType.
