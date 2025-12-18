@@ -2,6 +2,7 @@ import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:form_architect/src/models/form_brick.dart';
 import 'package:form_architect/src/utils/custom_dropdown_theme_ext.dart';
+import 'package:form_architect/src/widgets/brick_error.dart';
 
 /// A form field widget for selecting multiple values from a dropdown menu.
 ///
@@ -70,56 +71,60 @@ class _MultiSelectDropdownBrickState<T>
       initialValue: initialValue,
       enabled: widget.brick.isEnabled,
       builder: (FormFieldState<List<T>> field) {
-        return EmptyInputDecorator(
-          child: CustomDropdown<FormBrickOption<T>>.multiSelectSearchRequest(
-            decoration: Theme.of(context).customDropdownDecoration,
+        final hasError = field.hasError && field.errorText != null;
+        return BrickError(
+          field: field,
+          child: EmptyInputDecorator(
+            child: CustomDropdown<FormBrickOption<T>>.multiSelectSearchRequest(
+              decoration: Theme.of(
+                context,
+              ).customDropdownDecoration(hasError: hasError),
 
-            /// Hint text for dropdown field and search bar.
-            hintText: widget.brick.hint,
+              /// Hint text for dropdown field and search bar.
+              hintText: widget.brick.hint,
 
-            /// The initially selected dropdown items.
-            initialItems: initialSelectedOptions,
+              /// The initially selected dropdown items.
+              initialItems: initialSelectedOptions,
 
-            /// All available options to select from.
-            items: options,
+              /// All available options to select from.
+              items: options,
 
-            /// Builds each item in the dropdown list.
-            listItemBuilder: (context, item, isSelected, onItemSelect) {
-              return Text(item.label);
-            },
+              /// Builds each item in the dropdown list.
+              listItemBuilder: (context, item, isSelected, onItemSelect) {
+                return Text(item.label);
+              },
 
-            listValidator: (e) {
-              return "Error";
-            },
-            validateOnChange: true,
+              validateOnChange: true,
 
-            /// Asynchronously filters dropdown options based on search query.
-            futureRequest: (query) async {
-              return options
-                  .where(
-                    (e) => e.label.toLowerCase().contains(query.toLowerCase()),
-                  )
-                  .toList();
-            },
+              /// Asynchronously filters dropdown options based on search query.
+              futureRequest: (query) async {
+                return options
+                    .where(
+                      (e) =>
+                          e.label.toLowerCase().contains(query.toLowerCase()),
+                    )
+                    .toList();
+              },
 
-            /// How the selected items appear inside the dropdown field.
-            headerListBuilder: (context, selectedItems, enabled) {
-              return Text(selectedItems.map((e) => e.label).join(', '));
-            },
+              /// How the selected items appear inside the dropdown field.
+              headerListBuilder: (context, selectedItems, enabled) {
+                return Text(selectedItems.map((e) => e.label).join(', '));
+              },
 
-            /// Whether the dropdown is interactive.
-            enabled: widget.brick.isEnabled,
+              /// Whether the dropdown is interactive.
+              enabled: widget.brick.isEnabled,
 
-            /// Callback when the list of selected options changes.
-            onListChanged: (selectedOptions) {
-              if (selectedOptions.isEmpty) return;
-              final selectedValues = selectedOptions
-                  .map((e) => e.value)
-                  .toList();
-              setState(() {
-                field.didChange(selectedValues);
-              });
-            },
+              /// Callback when the list of selected options changes.
+              onListChanged: (selectedOptions) {
+                if (selectedOptions.isEmpty) return;
+                final selectedValues = selectedOptions
+                    .map((e) => e.value)
+                    .toList();
+                setState(() {
+                  field.didChange(selectedValues);
+                });
+              },
+            ),
           ),
         );
       },

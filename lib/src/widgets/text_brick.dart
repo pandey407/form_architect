@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:form_architect/src/models/form_brick.dart';
+import 'package:form_architect/src/models/form_validation_rule.dart';
+import 'package:form_architect/src/utils/string_ext.dart';
 import 'package:form_architect/src/utils/text_formatter.dart';
 
 /// [TextBrick] is a form field widget for text, textarea, password, and number input types.
@@ -117,6 +119,114 @@ class _TextBrickState extends State<TextBrick> {
     return null;
   }
 
+  /// Validates the text input using the brick's validation rules.
+  String? _validateInput(String? value) {
+    final validationRules = widget.brick.validation;
+    if (validationRules == null || validationRules.isEmpty) {
+      return null;
+    }
+
+    // Apply each validation rule
+    for (final rule in validationRules) {
+      switch (rule.type) {
+        case FormValidationRuleType.required:
+          if (value.isWhiteSpace) {
+            return rule.message;
+          }
+          break;
+
+        case FormValidationRuleType.min:
+          if (value.isWhiteSpace) {
+            // Skip min validation if field is empty (required will catch it)
+            continue;
+          }
+          final minValue = rule.value;
+          if (minValue != null && value != null) {
+            if (_isIntegerNumber || _isFloatingNumber) {
+              // For numeric fields, compare the numeric value
+              final numValue = _isIntegerNumber
+                  ? int.tryParse(value)
+                  : double.tryParse(value);
+              if (numValue == null) {
+                // Invalid number format, skip min check (could add separate validation)
+                continue;
+              }
+              final minNum = minValue is num
+                  ? minValue
+                  : num.tryParse(minValue.toString());
+              if (minNum != null && numValue < minNum) {
+                return rule.message;
+              }
+            } else {
+              // For text fields, compare string length
+              final minLength = minValue is int
+                  ? minValue
+                  : int.tryParse(minValue.toString());
+              if (minLength != null && value.length < minLength) {
+                return rule.message;
+              }
+            }
+          }
+          break;
+
+        case FormValidationRuleType.max:
+          if (value.isWhiteSpace) {
+            // Skip max validation if field is empty
+            continue;
+          }
+          final maxValue = rule.value;
+          if (maxValue != null && value != null) {
+            if (_isIntegerNumber || _isFloatingNumber) {
+              // For numeric fields, compare the numeric value
+              final numValue = _isIntegerNumber
+                  ? int.tryParse(value)
+                  : double.tryParse(value);
+              if (numValue == null) {
+                // Invalid number format, skip max check
+                continue;
+              }
+              final maxNum = maxValue is num
+                  ? maxValue
+                  : num.tryParse(maxValue.toString());
+              if (maxNum != null && numValue > maxNum) {
+                return rule.message;
+              }
+            } else {
+              // For text fields, compare string length
+              final maxLength = maxValue is int
+                  ? maxValue
+                  : int.tryParse(maxValue.toString());
+              if (maxLength != null && value.length > maxLength) {
+                return rule.message;
+              }
+            }
+          }
+          break;
+
+        case FormValidationRuleType.pattern:
+          if (value.isWhiteSpace) {
+            // Skip pattern validation if field is empty (required will catch it)
+            continue;
+          }
+          final pattern = rule.value;
+          if (pattern != null && pattern is String && value != null) {
+            try {
+              final regex = RegExp(pattern);
+              if (!regex.hasMatch(value)) {
+                return rule.message;
+              }
+            } catch (e) {
+              // Invalid regex pattern, skip this validation
+              continue;
+            }
+          }
+          break;
+      }
+    }
+
+    return null; // All validations passed
+  }
+
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -147,6 +257,11 @@ class _TextBrickState extends State<TextBrick> {
       textInputAction: _isTextArea
           ? TextInputAction.newline
           : TextInputAction.next,
+      validator:
+          (widget.brick.validation != null &&
+              widget.brick.validation!.isNotEmpty)
+          ? _validateInput
+          : null,
     );
   }
 }

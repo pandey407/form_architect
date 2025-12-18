@@ -28,13 +28,21 @@ class BrickError extends StatelessWidget {
         Theme.of(context).inputDecorationTheme.errorStyle ??
         TextStyle(color: errorColor);
 
+    // Get content padding from InputDecorationTheme to match TextFormField error spacing
+    final contentPadding =
+        Theme.of(
+          context,
+        ).inputDecorationTheme.contentPadding?.resolve(TextDirection.ltr) ??
+        const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0);
+    final leftPadding = contentPadding.left;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         child,
         if (error != null && error.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(top: 4.0, left: 4.0),
+            padding: EdgeInsets.only(top: 4.0, left: leftPadding),
             child: DefaultTextStyle(style: errorStyle, child: Text(error)),
           ),
       ],

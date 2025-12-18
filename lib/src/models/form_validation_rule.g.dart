@@ -10,14 +10,14 @@ FormValidationRule _$FormValidationRuleFromJson(Map<String, dynamic> json) =>
     FormValidationRule(
       type: $enumDecode(_$FormValidationRuleTypeEnumMap, json['type']),
       value: json['value'],
-      message: json['message'] as String?,
+      message: json['message'] as String,
     );
 
 Map<String, dynamic> _$FormValidationRuleToJson(FormValidationRule instance) =>
     <String, dynamic>{
       'type': _$FormValidationRuleTypeEnumMap[instance.type]!,
       'value': ?instance.value,
-      'message': ?instance.message,
+      'message': instance.message,
     };
 
 const _$FormValidationRuleTypeEnumMap = {

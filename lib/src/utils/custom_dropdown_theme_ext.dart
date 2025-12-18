@@ -5,9 +5,11 @@ extension CustomDropdownThemeExtension on ThemeData {
   /// Converts the current theme's [inputDecorationTheme] and [colorScheme]
   /// to a [CustomDropdownDecoration].
   ///
+  /// [hasError] - If true, uses error border styling instead of normal border.
+  ///
   /// Usage:
-  ///   Theme.of(context).customDropdownDecoration()
-  CustomDropdownDecoration get customDropdownDecoration {
+  ///   Theme.of(context).customDropdownDecoration(hasError: true)
+  CustomDropdownDecoration customDropdownDecoration({bool hasError = false}) {
     final inputTheme = inputDecorationTheme;
     final inputBorder = inputTheme.border is OutlineInputBorder
         ? inputTheme.border as OutlineInputBorder
@@ -25,6 +27,37 @@ extension CustomDropdownThemeExtension on ThemeData {
         ? inputTheme.errorBorder as OutlineInputBorder
         : null;
 
+    // Determine which border to use for closed state
+    Border? closedBorder;
+    BorderRadius closedBorderRadius;
+
+    if (hasError &&
+        errorBorder != null &&
+        errorBorder.borderSide != BorderSide.none) {
+      closedBorder = Border.all(
+        color: errorBorder.borderSide.color,
+        width: errorBorder.borderSide.width,
+      );
+      closedBorderRadius = errorBorder.borderRadius;
+    } else if (enabledBorder != null &&
+        enabledBorder.borderSide != BorderSide.none) {
+      closedBorder = Border.all(
+        color: enabledBorder.borderSide.color,
+        width: enabledBorder.borderSide.width,
+      );
+      closedBorderRadius = enabledBorder.borderRadius;
+    } else if (inputBorder != null &&
+        inputBorder.borderSide != BorderSide.none) {
+      closedBorder = Border.all(
+        color: inputBorder.borderSide.color,
+        width: inputBorder.borderSide.width,
+      );
+      closedBorderRadius = inputBorder.borderRadius;
+    } else {
+      closedBorder = null;
+      closedBorderRadius = BorderRadius.circular(8);
+    }
+
     return CustomDropdownDecoration(
       closedFillColor: inputTheme.fillColor ?? Colors.white,
       expandedFillColor: inputTheme.fillColor ?? Colors.white,
@@ -39,23 +72,9 @@ extension CustomDropdownThemeExtension on ThemeData {
         color: inputTheme.iconColor,
       ),
 
-      // Closed state borders
-      closedBorder: enabledBorder?.borderSide != null
-          ? Border.all(
-              color: enabledBorder!.borderSide.color,
-              width: enabledBorder.borderSide.width,
-            )
-          : inputBorder?.borderSide != null
-          ? Border.all(
-              color: inputBorder!.borderSide.color,
-              width: inputBorder.borderSide.width,
-            )
-          : null,
-
-      closedBorderRadius:
-          enabledBorder?.borderRadius ??
-          inputBorder?.borderRadius ??
-          BorderRadius.circular(8),
+      // Closed state borders - use error border if hasError is true
+      closedBorder: closedBorder,
+      closedBorderRadius: closedBorderRadius,
 
       // Error state borders
       closedErrorBorder: errorBorder?.borderSide != null

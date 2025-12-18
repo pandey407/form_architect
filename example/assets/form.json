@@ -8,8 +8,8 @@
       "label": "Email Address",
       "hint": "Enter your email",
       "validation": [
-        {"type": "REQUIRED"},
-        {"type": "PATTERN"}
+        {"type": "REQUIRED", "message": "Email is required"},
+        {"type": "PATTERN", "value": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", "message": "Please enter a valid email address"}
       ]
     },
     {
@@ -24,8 +24,9 @@
       "label": "Password",
       "hint": "Enter a secure password",
       "validation": [
-        {"type": "REQUIRED"},
-        {"type": "MIN", "value": 8}
+        {"type": "REQUIRED", "message": "Password is required"},
+        {"type": "MIN", "value": 8, "message": "Password must be at least 8 characters long"},
+        {"type": "PATTERN", "value": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", "message": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"}
       ]
     },
     {
@@ -40,8 +41,8 @@
           "value": 15,
           "flex": 1,
           "validation": [
-            {"type": "MIN", "value": 0},
-            {"type": "MAX", "value": 120}
+            {"type": "MIN", "value": 0, "message": "Age must be at least 0"},
+            {"type": "MAX", "value": 50, "message": "Age must be atleast 50"}
           ]
         },
         {
@@ -49,13 +50,17 @@
           "type": "FLOAT",
           "label": "Height (m)",
           "hint": "Your height in meters",
-          "flex": 1
+          "flex": 1,
+          "validation": [
+            {"type": "MIN", "value": 0, "message": "Height must be at least 0"},
+            {"type": "MAX", "value": 100.1, "message": "Height must be under 100.2"}
+          ]
         }
       ]
     },
     {
       "key": "gender",
-      "type": "SINGLE_SELECT_DROPDOWN",
+      "type": "RADIO",
       "label": "Gender",
       "hint": "We'll help you connect",
       "options": [

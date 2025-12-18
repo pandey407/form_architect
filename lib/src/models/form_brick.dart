@@ -143,6 +143,17 @@ class FormBrick<T> extends FormElement {
 
   Map<String, dynamic> toJson(Object? Function(T value) toJsonT) =>
       _$FormBrickToJson(this, toJsonT);
+
+  /// Checks if this brick has a required validation rule.
+  bool get isRequired {
+    final validationRules = validation;
+    if (validationRules == null || validationRules.isEmpty) {
+      return false;
+    }
+    return validationRules.any(
+      (rule) => rule.type == FormValidationRuleType.required,
+    );
+  }
 }
 
 /// Represents a single option in a selection-type FormBrickType.

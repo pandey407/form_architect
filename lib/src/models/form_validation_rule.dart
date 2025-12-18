@@ -46,12 +46,14 @@ class FormValidationRule {
   /// - For others (like [FormValidationRuleType.required]), this can be null.
   final dynamic value;
 
-  /// The validation error message to show if this rule fails.
-  ///
-  /// If null, a default error message will be used.
-  final String? message;
+  /// The error message to display if this validation rule fails.
+  final String message;
 
-  const FormValidationRule({required this.type, this.value, this.message});
+  const FormValidationRule({
+    required this.type,
+    this.value,
+    required this.message,
+  });
 
   factory FormValidationRule.fromJson(Map<String, dynamic> json) =>
       _$FormValidationRuleFromJson(json);

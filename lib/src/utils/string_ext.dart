@@ -13,4 +13,12 @@ extension StringExt on String {
 
     return words.length;
   }
+
+  /// Returns true if the string is null, empty, or contains only whitespace characters.
+  bool get isWhiteSpace => trim().isEmpty;
+}
+
+extension NullableStringExt on String? {
+  /// Returns true if the string is null, empty, or contains only whitespace characters.
+  bool get isWhiteSpace => this == null || this!.trim().isEmpty;
 }
