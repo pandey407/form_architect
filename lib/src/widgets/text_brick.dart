@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_architect/src/models/form_brick.dart';
 import 'package:form_architect/src/utils/text_formatter.dart';
 
+//TODO: Needs to emit string for string based and num for number based, maybe add a different form field entirely.
 /// [TextBrick] is a form field widget for text, textarea, password, and number input types.
 ///
 /// It adapts its behavior and appearance based on the [FormBrickType] of the given [FormBrick], supporting:
@@ -119,7 +121,8 @@ class _TextBrickState extends State<TextBrick> {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
+    return FormBuilderTextField(
+      name: widget.brick.key,
       controller: _controller,
       focusNode: _focusNode,
       enabled: widget.brick.isEnabled,

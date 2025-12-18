@@ -67,8 +67,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final formKey = GlobalKey<FormState>();
-  Map<String, dynamic> formValues = {};
+  final formKey = GlobalKey<FormArchitectState>();
   String formJson = '';
 
   @override
@@ -94,16 +93,14 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(title: Text(widget.title)),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          final isValid = formKey.currentState?.validate() ?? false;
-          if (!isValid) return;
+          final values = formKey.currentState?.validateBricks();
+          if (values == null) return;
           showDialog(
             context: context,
             builder: (_) => AlertDialog(
               title: const Text("Form Data"),
               content: Text(
-                formValues.entries
-                    .map((e) => "${e.key}: ${e.value}")
-                    .join("\n"),
+                values.entries.map((e) => "${e.key}: ${e.value}").join("\n"),
               ),
               actions: [
                 TextButton(
@@ -118,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: formJson.isEmpty
           ? const Center(child: CircularProgressIndicator())
-          : FormArchitect(json: formJson, formKey: formKey),
+          : FormArchitect(json: formJson, key: formKey),
     );
   }
 }

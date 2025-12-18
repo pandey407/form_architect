@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_architect/src/models/form_brick.dart';
 import 'package:form_architect/src/widgets/brick_error.dart';
 import 'package:form_architect/src/widgets/external_brick_label.dart';
@@ -51,7 +52,8 @@ class _RadioBrickState<T> extends State<RadioBrick<T>> {
   Widget build(BuildContext context) {
     final options = widget.brick.options;
     if (options == null) return const SizedBox.shrink();
-    return FormField<T>(
+    return FormBuilderField<T>(
+      name: widget.brick.key,
       initialValue: widget.brick.value,
       enabled: widget.brick.isEnabled,
       autovalidateMode: AutovalidateMode.disabled,

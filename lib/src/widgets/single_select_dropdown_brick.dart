@@ -1,6 +1,7 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_architect/src/models/form_brick.dart';
 import 'package:form_architect/src/utils/custom_dropdown_theme_ext.dart';
 import 'package:form_architect/src/widgets/brick_error.dart';
@@ -60,8 +61,8 @@ class _SingleSelectDropdownBrickState<T>
 
   @override
   Widget build(BuildContext context) {
-    return FormField<T>(
-      initialValue: initialValue,
+    return FormBuilderField<T>(
+      name: widget.brick.key,
       enabled: widget.brick.isEnabled,
       validator: (value) => widget.brick.validate(value: value),
       builder: (FormFieldState<T> field) {

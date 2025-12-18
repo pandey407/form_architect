@@ -1,4 +1,5 @@
 import 'package:cupertino_calendar_picker/cupertino_calendar_picker.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_architect/form_architect.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:form_architect/src/utils/date_time_ext.dart';
@@ -67,7 +68,8 @@ class _DateTimeBrickState extends State<DateTimeBrick> {
   @override
   Widget build(BuildContext context) {
     // Wrapped with FormField for form integration
-    return FormField<DateTime>(
+    return FormBuilderField<DateTime>(
+      name: widget.brick.key,
       initialValue: initialDateTime,
       validator: (e) {
         return "Error";

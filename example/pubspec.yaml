@@ -12,7 +12,6 @@ dependencies:
   cupertino_icons: ^1.0.8
   form_architect:
     path: ../
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

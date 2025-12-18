@@ -1,5 +1,6 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_architect/src/models/form_brick.dart';
 import 'package:form_architect/src/utils/custom_dropdown_theme_ext.dart';
 import 'package:form_architect/src/widgets/brick_error.dart';
@@ -67,7 +68,8 @@ class _MultiSelectDropdownBrickState<T>
 
   @override
   Widget build(BuildContext context) {
-    return FormField<List<T>>(
+    return FormBuilderField<List<T>>(
+      name: widget.brick.key,
       initialValue: initialValue,
       validator: (values) => widget.brick.validate(values: values),
       builder: (FormFieldState<List<T>> field) {

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_architect/form_architect.dart';
 import 'package:form_architect/src/models/form_element.dart';
 
@@ -11,32 +12,31 @@ class FormArchitect extends StatefulWidget {
   /// JSON string or Map containing the form configuration
   final dynamic json;
 
-  /// Form key for validation
-  final GlobalKey<FormState>? formKey;
-
   /// Padding around the form
   final EdgeInsets? padding;
 
-  const FormArchitect({
-    super.key,
-    required this.json,
-    this.formKey,
-    this.padding,
-  });
+  const FormArchitect({super.key, required this.json, this.padding});
 
   @override
-  State<FormArchitect> createState() => _FormArchitectState();
+  State<FormArchitect> createState() => FormArchitectState();
 }
 
-class _FormArchitectState extends State<FormArchitect> {
+class FormArchitectState extends State<FormArchitect> {
   late FormMasonry _formLayout;
-  late GlobalKey<FormState> _formKey;
+  final _formKey = GlobalKey<FormBuilderState>();
 
   @override
   void initState() {
     super.initState();
-    _formKey = widget.formKey ?? GlobalKey<FormState>();
     _loadFormFromJson();
+  }
+
+  Map<String, dynamic>? validateBricks() {
+    final isValid = _formKey.currentState?.saveAndValidate() ?? false;
+    debugPrint(isValid.toString());
+    // if (!isValid) return null;
+    final value = _formKey.currentState?.value;
+    return value;
   }
 
   void _loadFormFromJson() {
@@ -147,7 +147,8 @@ class _FormArchitectState extends State<FormArchitect> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
+    return FormBuilder(
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       key: _formKey,
       child: SingleChildScrollView(
         padding: widget.padding ?? EdgeInsets.all(16),

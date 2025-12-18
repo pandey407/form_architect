@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_architect/src/models/form_brick.dart';
 import 'package:form_architect/src/widgets/brick_error.dart';
 import 'package:form_architect/src/widgets/external_brick_label.dart';
@@ -38,7 +39,8 @@ class _ToggleBrickState extends State<ToggleBrick> {
 
   @override
   Widget build(BuildContext context) {
-    return FormField<bool>(
+    return FormBuilderField<bool>(
+      name: widget.brick.key,
       initialValue: value,
       builder: (FormFieldState<bool> field) {
         return BrickError(
