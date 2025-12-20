@@ -106,6 +106,15 @@ extension FormBrickTypeX on FormBrickType {
     FormBrickType.video,
   ].contains(this);
 
+  /// Returns true if this [FormBrickType] is one of the file-related field types (file, image, or video).
+  ///
+  /// Use this to identify fields that should have their values placed in the "files" map in [FormArchitectResult].
+  bool get isFileType => [
+    FormBrickType.file,
+    FormBrickType.image,
+    FormBrickType.video,
+  ].contains(this);
+
   /// Returns true if the [FormBrickType] represents a date/time field (date, dateTime, or time).
   bool get isDateTimeType => [
     FormBrickType.date,

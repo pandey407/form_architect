@@ -6,7 +6,7 @@
             "key": "email",
             "type": "TEXT",
             "label": "Email Address",
-            "hint": "Enter your email",
+            "hint": "Enter your email address",
             "validation": [
                 {
                     "type": "REQUIRED",
@@ -20,37 +20,32 @@
             ]
         },
         {
-            "key": "bio",
-            "type": "TEXTAREA",
-            "label": "Biography",
-            "hint": "Tell us about yourself",
+            "key": "full_name",
+            "type": "TEXT",
+            "label": "Full Name",
+            "hint": "Enter your full name",
             "validation": [
                 {
-                    "type": "MAX",
-                    "value": 60,
-                    "message": "Bio can be at most 60 character long"
+                    "type": "REQUIRED",
+                    "message": "Full name is required"
+                },
+                {
+                    "type": "MIN",
+                    "value": 2,
+                    "message": "Full name must be at least 2 characters"
                 }
             ]
         },
         {
-            "key": "password",
-            "type": "PASSWORD",
-            "label": "Password",
-            "hint": "Enter a secure password",
+            "key": "bio",
+            "type": "TEXTAREA",
+            "label": "Short Biography",
+            "hint": "Give a brief introduction about yourself",
             "validation": [
                 {
-                    "type": "REQUIRED",
-                    "message": "Password is required"
-                },
-                {
-                    "type": "MIN",
-                    "value": 8,
-                    "message": "Password must be at least 8 characters long"
-                },
-                {
-                    "type": "PATTERN",
-                    "value": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
-                    "message": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+                    "type": "MAX",
+                    "value": 200,
+                    "message": "Bio can be at most 200 characters long"
                 }
             ]
         },
@@ -63,37 +58,38 @@
                     "type": "INTEGER",
                     "label": "Age",
                     "hint": "Your age",
-                    "value": 15,
+                    "value": 25,
                     "flex": 1,
                     "validation": [
                         {
                             "type": "MIN",
-                            "value": 0,
-                            "message": "Age must be at least 0"
+                            "value": 13,
+                            "message": "You must be at least 13 years old"
                         },
                         {
                             "type": "MAX",
-                            "value": 50,
-                            "message": "Age must be atleast 50"
+                            "value": 120,
+                            "message": "Please enter a realistic age"
                         }
                     ]
                 },
                 {
                     "key": "height",
                     "type": "FLOAT",
-                    "label": "Height (m)",
-                    "hint": "Your height in meters",
+                    "label": "Height (cm)",
+                    "hint": "Your height in centimeters",
+                    "value": 170,
                     "flex": 1,
                     "validation": [
                         {
                             "type": "MIN",
-                            "value": 0,
-                            "message": "Height must be at least 0"
+                            "value": 50,
+                            "message": "Height must be at least 50 cm"
                         },
                         {
                             "type": "MAX",
-                            "value": 100.1,
-                            "message": "Height must be under 100.2"
+                            "value": 250,
+                            "message": "Height must be under 250 cm"
                         }
                     ]
                 }
@@ -103,7 +99,7 @@
             "key": "gender",
             "type": "RADIO",
             "label": "Gender",
-            "hint": "We'll help you connect",
+            "hint": "Select your gender",
             "options": [
                 {
                     "value": "male",
@@ -126,17 +122,10 @@
             ]
         },
         {
-            "key": "newsletter",
-            "type": "TOGGLE",
-            "label": "Subscribe to newsletter",
-            "hint": "Stay update with the latest",
-            "value": false
-        },
-        {
             "key": "country",
             "type": "SINGLE_SELECT_DROPDOWN",
             "label": "Country",
-            "hint": "Select your country",
+            "hint": "Select your country of residence",
             "options": [
                 {
                     "value": "us",
@@ -166,7 +155,7 @@
             "key": "interests",
             "type": "MULTI_SELECT_DROPDOWN",
             "label": "Interests",
-            "hint": "Select your interests",
+            "hint": "Select your interests (2-5)",
             "options": [
                 {
                     "value": "sports",
@@ -192,7 +181,7 @@
             "validation": [
                 {
                     "type": "REQUIRED",
-                    "message": "Interests is required"
+                    "message": "Interests are required"
                 },
                 {
                     "type": "MIN",
@@ -201,77 +190,83 @@
                 },
                 {
                     "type": "MAX",
-                    "value": 3,
-                    "message": "You can select up to 3 interests"
+                    "value": 5,
+                    "message": "You can select up to 5 interests"
                 }
             ]
         },
         {
-            "key": "birthDate",
+            "key": "birth_date",
             "type": "DATE",
             "label": "Birth Date",
-            "value": "2022-01-01",
             "hint": "Select your birth date",
             "validation": [
                 {
                     "type": "REQUIRED",
-                    "message": "DOB is required"
+                    "message": "Birth date is required"
                 },
                 {
                     "type": "MIN",
-                    "value": "1990-01-01",
-                    "message": "Invalid min date"
+                    "value": "1900-01-01",
+                    "message": "Please select a valid birth date"
                 },
                 {
                     "type": "MAX",
                     "value": "2026-01-01",
-                    "message": "Invalid max date"
+                    "message": "Birth date cannot be in the future"
                 }
             ]
         },
         {
-            "key": "preferredTime",
+            "key": "preferred_time",
             "type": "TIME",
             "label": "Preferred Contact Time",
             "hint": "When should we contact you?",
             "validation": [
                 {
                     "type": "REQUIRED",
-                    "message": "Preferred time is required"
+                    "message": "Preferred contact time is required"
                 }
             ]
         },
         {
-            "key": "appointmentDateTime",
+            "key": "appointment_date_time",
             "type": "DATE_TIME",
             "label": "Appointment Date & Time",
             "hint": "Select appointment date and time",
             "validation": [
                 {
                     "type": "REQUIRED",
-                    "message": "Appointment date time is required"
+                    "message": "Appointment date & time is required"
                 },
                 {
                     "type": "PATTERN",
                     "value": "yyyy-MM-ddTHH:mm",
-                    "message": "The date & time format must be yyyy-MM-dd'T'HH:mm:ss"
+                    "message": "The date & time format must be yyyy-MM-dd'T'HH:mm"
                 }
             ]
         },
         {
+            "key": "newsletter",
+            "type": "TOGGLE",
+            "label": "Subscribe to newsletter",
+            "hint": "Stay updated with the latest news",
+            "value": false
+        },
+        {
             "key": "receipts",
             "type": "IMAGE",
-            "label": "Receipts",
-            "hint": "Upload receipts",
+            "label": "Upload Receipts",
+            "hint": "Upload up to 3 receipts",
             "validation": [
                 {
                     "type": "REQUIRED",
-                    "message": "Receipt images is required"
+                    "message": "At least one receipt image is required"
                 },
                 {
                     "type": "MIN",
-                    "value": 2,
-                    "message": "Please select at least 2 receipt"
+                    "value": 1,
+                    "message": "Please select at least 1 receipt"
                 },
                 {
                     "type": "MAX",
@@ -281,37 +276,37 @@
             ]
         },
         {
-            "key": "introVideo",
+            "key": "resume",
+            "type": "FILE",
+            "label": "Resume",
+            "hint": "Upload your resume (PDF or DOC)",
+            "validation": [
+                {
+                    "type": "REQUIRED",
+                    "message": "Resume is required"
+                },
+                {
+                    "type": "MAX",
+                    "value": 1,
+                    "message": "Only one file allowed"
+                },
+                {
+                    "type": "ALLOWED_FILE_EXTENSIONS",
+                    "value": ["pdf", "doc", "docx"],
+                    "message": "Allowed file types: pdf, doc, docx"
+                }
+            ]
+        },
+        {
+            "key": "intro_video",
             "type": "VIDEO",
             "label": "Introduction Video",
             "hint": "Upload a short intro video",
             "validation": [
                 {
-                    "type": "REQUIRED",
-                    "message": "Video is required"
-                },
-                {
                     "type": "MAX",
                     "value": 1,
-                    "message": "You can select only 1 video"
-                }
-            ]
-        },
-        {
-            "key": "resume",
-            "type": "FILE",
-            "label": "Resume",
-            "hint": "Upload your resume (PDF)",
-            "validation": [
-                {
-                    "type": "MAX",
-                    "value": 3,
-                    "message": "You can select at max 3 files"
-                },
-                {
-                    "type": "ALLOWED_FILE_EXTENSIONS",
-                    "value": ["csv", "doc"],
-                    "message": "Not allowed file type"
+                    "message": "Only one video allowed"
                 }
             ]
         }

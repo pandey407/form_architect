@@ -95,12 +95,36 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           final values = formKey.currentState?.validateBricks();
           if (values == null) return;
+          final regularFields = values.fields;
+          final fileFields = values.files;
           showDialog(
             context: context,
             builder: (_) => AlertDialog(
               title: const Text("Form Data"),
-              content: Text(
-                values.entries.map((e) => "${e.key}: ${e.value}").join("\n"),
+              content: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Fields:",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    ...regularFields.entries.map(
+                      (e) => Text("${e.key}: ${e.value}"),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      "Files:",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    if (fileFields.isEmpty)
+                      const Text("(none)")
+                    else
+                      ...fileFields.entries.map(
+                        (e) => Text("${e.key}: ${e.value?.join(', ')}"),
+                      ),
+                  ],
+                ),
               ),
               actions: [
                 TextButton(

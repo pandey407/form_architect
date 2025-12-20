@@ -6,6 +6,17 @@ import 'package:form_architect/form_architect.dart';
 import 'package:form_architect/src/models/form_element.dart';
 import 'package:form_architect/src/widgets/numeric_brick.dart';
 
+/// Class to wrap validated form data and files separately.
+class FormArchitectResult {
+  /// Non-file fields (primitive data, text, etc)
+  final Map<String, dynamic> fields;
+
+  /// Files/images/videos, where value is the list of data/objects.
+  final Map<String, List<String>?> files;
+
+  const FormArchitectResult({required this.fields, required this.files});
+}
+
 /// Main builder widget that constructs a complete form from JSON configuration.
 ///
 /// This widget handles parsing JSON, rendering the form layout, and managing form state.
@@ -32,12 +43,31 @@ class FormArchitectState extends State<FormArchitect> {
     _loadFormFromJson();
   }
 
-  Map<String, dynamic>? validateBricks() {
+  /// Validates the form.
+  /// If valid, returns a FormArchitectResult containing:
+  ///   - fields: all non-file field values
+  ///   - files: a map of all file/image/video fields and their values
+  /// Returns `null` if validation fails.
+  FormArchitectResult? validateBricks() {
     final isValid = _formKey.currentState?.saveAndValidate() ?? false;
-    debugPrint(isValid.toString());
-    // if (!isValid) return null;
-    final value = _formKey.currentState?.value;
-    return value;
+    if (!isValid) return null;
+    final value = _formKey.currentState?.value ?? {};
+
+    final bricks = _collectBricks(_formLayout);
+
+    final filesMap = <String, List<String>?>{};
+    final dataMap = <String, dynamic>{};
+
+    for (final brick in bricks) {
+      final k = brick.key;
+      final v = value[k];
+      if (brick.type.isFileType) {
+        filesMap[k] = v as List<String>?;
+      } else {
+        dataMap[k] = v;
+      }
+    }
+    return FormArchitectResult(fields: dataMap, files: filesMap);
   }
 
   void _loadFormFromJson() {
@@ -59,6 +89,17 @@ class FormArchitectState extends State<FormArchitect> {
       debugPrint('Error parsing form JSON: $e');
       rethrow;
     }
+  }
+
+  /// Collects all FormBrick elements (recursively) in the layout.
+  List<FormBrick> _collectBricks(FormElement el) {
+    if (el is FormBrick) {
+      return [el];
+    }
+    if (el is FormMasonry) {
+      return el.children.expand(_collectBricks).toList();
+    }
+    return [];
   }
 
   Widget _buildBrick(FormElement element) {
