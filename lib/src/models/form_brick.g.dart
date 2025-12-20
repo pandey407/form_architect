@@ -28,7 +28,6 @@ FormBrick<T> _$FormBrickFromJson<T>(
       ?.map((e) => FormValidationRule.fromJson(e as Map<String, dynamic>))
       .toList(),
   isEnabled: json['isEnabled'] as bool? ?? true,
-  range: (json['range'] as List<dynamic>?)?.map(fromJsonT).toList(),
   flex: (json['flex'] as num?)?.toInt(),
 );
 
@@ -48,7 +47,6 @@ Map<String, dynamic> _$FormBrickToJson<T>(
       .toList(),
   'validation': ?instance.validation,
   'isEnabled': instance.isEnabled,
-  'range': ?instance.range?.map(toJsonT).toList(),
 };
 
 const _$FormBrickTypeEnumMap = {

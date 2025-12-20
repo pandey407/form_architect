@@ -1,6 +1,7 @@
 import 'package:form_architect/src/models/form_brick.dart';
 import 'package:form_architect/src/models/form_validation_rule.dart';
 import 'package:form_architect/src/utils/string_ext.dart';
+import 'package:form_architect/src/utils/type_parser_helper.dart';
 
 /// Helper class for validating form brick values.
 ///
@@ -41,11 +42,9 @@ class FormValidationHelper {
     }
 
     // For string values, check if empty or whitespace
-    if (value is String) {
-      final stringValue = value as String;
-      if (stringValue.isWhiteSpace) {
-        return requiredRule.message;
-      }
+    final parsedStr = TypeParserHelper.parseString(value);
+    if (parsedStr != null && (parsedStr.isWhiteSpace)) {
+      return requiredRule.message;
     }
 
     return null; // Value is present
@@ -58,9 +57,7 @@ class FormValidationHelper {
       return null;
     }
 
-    final isFromTextField = value is String?;
-    if (!isFromTextField) return null;
-    final stringValue = value as String?;
+    final stringValue = TypeParserHelper.parseString(value);
     if (stringValue == null) return null;
 
     for (final rule in validationRules) {
@@ -76,9 +73,7 @@ class FormValidationHelper {
           }
           final minValue = rule.value;
           if (minValue != null) {
-            final minLength = minValue is int
-                ? minValue
-                : int.tryParse(minValue.toString());
+            final minLength = TypeParserHelper.parseNum(minValue)?.toInt();
             if (minLength != null && stringValue.length < minLength) {
               return rule.message;
             }
@@ -92,9 +87,7 @@ class FormValidationHelper {
           }
           final maxValue = rule.value;
           if (maxValue != null) {
-            final maxLength = maxValue is int
-                ? maxValue
-                : int.tryParse(maxValue.toString());
+            final maxLength = TypeParserHelper.parseNum(maxValue)?.toInt();
             if (maxLength != null && stringValue.length > maxLength) {
               return rule.message;
             }
@@ -132,9 +125,7 @@ class FormValidationHelper {
       return null;
     }
 
-    final isFromTextField = value is String?;
-    if (!isFromTextField) return null;
-    final stringValue = value as String?;
+    final stringValue = TypeParserHelper.parseString(value);
     if (stringValue == null) return null;
 
     for (final rule in validationRules) {
@@ -144,21 +135,19 @@ class FormValidationHelper {
           continue;
 
         case FormValidationRuleType.min:
-          if (value.isWhiteSpace) {
+          if (stringValue.isWhiteSpace) {
             // Skip min validation if field is empty (required will catch it)
             continue;
           }
           final minValue = rule.value;
           if (minValue != null) {
-            // For numeric fields, compare the numeric value
-            final numValue = num.tryParse(stringValue);
+            // Use TypeParserHelper to parse as num
+            final numValue = TypeParserHelper.parseNum(stringValue);
             if (numValue == null) {
               // Invalid number format, skip min check
               continue;
             }
-            final minNum = minValue is num
-                ? minValue
-                : num.tryParse(minValue.toString());
+            final minNum = TypeParserHelper.parseNum(minValue);
             if (minNum != null && numValue < minNum) {
               return rule.message;
             }
@@ -166,20 +155,18 @@ class FormValidationHelper {
           break;
 
         case FormValidationRuleType.max:
-          if (value.isWhiteSpace) {
+          if (stringValue.isWhiteSpace) {
             // Skip max validation if field is empty
             continue;
           }
           final maxValue = rule.value;
           if (maxValue != null) {
-            final numValue = double.tryParse(stringValue);
+            final numValue = TypeParserHelper.parseNum(stringValue);
             if (numValue == null) {
               // Invalid number format, skip max check
               continue;
             }
-            final maxNum = maxValue is num
-                ? maxValue
-                : num.tryParse(maxValue.toString());
+            final maxNum = TypeParserHelper.parseNum(maxValue);
             if (maxNum != null && numValue > maxNum) {
               return rule.message;
             }
@@ -187,23 +174,8 @@ class FormValidationHelper {
           break;
 
         case FormValidationRuleType.pattern:
-          // Generally not applied for numeric fields, but handle if present.
-          if (value.isWhiteSpace) {
-            continue;
-          }
-          final pattern = rule.value;
-          if (pattern != null && pattern is String) {
-            try {
-              final regex = RegExp(pattern);
-              if (!regex.hasMatch(stringValue)) {
-                return rule.message;
-              }
-            } catch (e) {
-              // Invalid regex pattern, skip this validation
-              continue;
-            }
-          }
-          break;
+          // Pattern validation typically do not apply to numeric field.
+          continue;
       }
     }
 
@@ -233,9 +205,7 @@ class FormValidationHelper {
           // For multi-select, "min" means minimum # of selections
           final minValue = rule.value;
           if (minValue != null) {
-            final minNum = minValue is num
-                ? minValue
-                : num.tryParse(minValue.toString());
+            final minNum = TypeParserHelper.parseNum(minValue);
             if (minNum != null && valueCount < minNum) {
               return rule.message;
             }
@@ -245,9 +215,7 @@ class FormValidationHelper {
           // For multi-select, "max" means maximum # of selections
           final maxValue = rule.value;
           if (maxValue != null) {
-            final maxNum = maxValue is num
-                ? maxValue
-                : num.tryParse(maxValue.toString());
+            final maxNum = TypeParserHelper.parseNum(maxValue);
             if (maxNum != null && valueCount > maxNum) {
               return rule.message;
             }
@@ -255,6 +223,55 @@ class FormValidationHelper {
           break;
         default:
           // Pattern validation typically do not apply to multi-select.
+          break;
+      }
+    }
+    return null;
+  }
+
+  /// Validates a date/datetime/time field against min/max validation rules.
+  ///
+  /// [value] - The field value, which should be a [DateTime], String, or num (timestamp).
+  /// [brick] - The [FormBrick] instance (should be of date/time type)
+  ///
+  /// Returns the error message if validation fails, null otherwise.
+  static String? validateDateTimeRules(dynamic value, FormBrick brick) {
+    final validationRules = brick.validation;
+    if (validationRules == null || validationRules.isEmpty) {
+      return null;
+    }
+    // Parse the value to DateTime
+    final dt = TypeParserHelper.parseDateTime(value);
+    if (dt == null) {
+      // If value can't be parsed, skip further date validation
+      return null;
+    }
+
+    for (final rule in validationRules) {
+      switch (rule.type) {
+        case FormValidationRuleType.required:
+          // Required validation already handled
+          continue;
+        case FormValidationRuleType.min:
+          final minValue = rule.value;
+          if (minValue != null) {
+            final minDt = TypeParserHelper.parseDateTime(minValue);
+            if (minDt != null && dt.isBefore(minDt)) {
+              return rule.message;
+            }
+          }
+          break;
+        case FormValidationRuleType.max:
+          final maxValue = rule.value;
+          if (maxValue != null) {
+            final maxDt = TypeParserHelper.parseDateTime(maxValue);
+            if (maxDt != null && dt.isAfter(maxDt)) {
+              return rule.message;
+            }
+          }
+          break;
+        default:
+          // Pattern validation typically do not apply to date time field, instead the pattern is used for value transformation to required format.
           break;
       }
     }

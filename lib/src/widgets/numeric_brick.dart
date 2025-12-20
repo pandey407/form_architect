@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_architect/src/models/form_brick.dart';
-import 'package:form_architect/src/utils/string_ext.dart';
 import 'package:form_architect/src/utils/text_formatter.dart';
+import 'package:form_architect/src/utils/type_parser_helper.dart';
 
 /// [NumericBrick] is a form field widget for integer and floating-point number inputs.
 ///
@@ -75,16 +75,6 @@ class _NumericBrickState extends State<NumericBrick> {
     return [IntegerTextInputFormatter()];
   }
 
-  /// Parses a string value to a num (int or double) based on the field type.
-  num? _parseValue(String? value) {
-    if (value == null || value.isEmpty) return null;
-    if (value.isWhiteSpace) return null;
-    if (_isInteger) {
-      return int.tryParse(value);
-    }
-    return double.tryParse(value);
-  }
-
   @override
   Widget build(BuildContext context) {
     return FormBuilderTextField(
@@ -100,7 +90,7 @@ class _NumericBrickState extends State<NumericBrick> {
       inputFormatters: _inputFormatters,
       textInputAction: TextInputAction.next,
       validator: (value) => widget.brick.validate(value: value),
-      valueTransformer: (value) => _parseValue(value),
+      valueTransformer: (value) => TypeParserHelper.parseNum(value),
     );
   }
 }

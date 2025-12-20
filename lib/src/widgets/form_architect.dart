@@ -35,7 +35,7 @@ class FormArchitectState extends State<FormArchitect> {
   Map<String, dynamic>? validateBricks() {
     final isValid = _formKey.currentState?.saveAndValidate() ?? false;
     debugPrint(isValid.toString());
-    if (!isValid) return null;
+    // if (!isValid) return null;
     final value = _formKey.currentState?.value;
     return value;
   }

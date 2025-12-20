@@ -201,8 +201,8 @@
                 },
                 {
                     "type": "MAX",
-                    "value": 4,
-                    "message": "You can select up to 4 interests"
+                    "value": 3,
+                    "message": "You can select up to 3 interests"
                 }
             ]
         },
@@ -210,24 +210,53 @@
             "key": "birthDate",
             "type": "DATE",
             "label": "Birth Date",
+            "value": "2022-01-01",
             "hint": "Select your birth date",
-            "value": "1988-02-08",
-            "range": [
-                "1900-01-01",
-                "2025-12-31"
+            "validation": [
+                {
+                    "type": "REQUIRED",
+                    "message": "DOB is required"
+                },
+                {
+                    "type": "MIN",
+                    "value": "1990-01-01",
+                    "message": "Invalid min date"
+                },
+                {
+                    "type": "MAX",
+                    "value": "2026-01-01",
+                    "message": "Invalid max date"
+                }
             ]
         },
         {
             "key": "preferredTime",
             "type": "TIME",
             "label": "Preferred Contact Time",
-            "hint": "When should we contact you?"
+            "hint": "When should we contact you?",
+            "validation": [
+                {
+                    "type": "REQUIRED",
+                    "message": "Preferred time is required"
+                }
+            ]
         },
         {
             "key": "appointmentDateTime",
             "type": "DATE_TIME",
             "label": "Appointment Date & Time",
-            "hint": "Select appointment date and time"
+            "hint": "Select appointment date and time",
+            "validation": [
+                {
+                    "type": "REQUIRED",
+                    "message": "Appointment date time is required"
+                },
+                {
+                    "type": "PATTERN",
+                    "value": "yyyy-MM-ddTHH:mm",
+                    "message": "The date & time format must be yyyy-MM-dd'T'HH:mm:ss"
+                }
+            ]
         },
         {
             "key": "profileImage",

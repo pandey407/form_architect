@@ -90,12 +90,21 @@ extension FormBrickTypeX on FormBrickType {
   bool get isNumericBrickType =>
       [FormBrickType.integer, FormBrickType.float].contains(this);
 
+  /// Returns true if the [FormBrickType] represents an integer field.
   bool get isIntegerType => this == FormBrickType.integer;
 
+  /// Returns true if the [FormBrickType] represents a float (decimal) field.
   bool get isFloatType => this == FormBrickType.float;
 
   /// Returns true if this [FormBrickType] is a multi-select dropdown type field.
   bool get isMultiSelectType => this == FormBrickType.multiSelectDropdown;
+
+  /// Returns true if the [FormBrickType] represents a date/time field (date, dateTime, or time).
+  bool get isDateTimeType => [
+    FormBrickType.date,
+    FormBrickType.dateTime,
+    FormBrickType.time,
+  ].contains(this);
 }
 
 /// A [FormBrick] configures how a single [FormBrickType] should be built and rendered.
@@ -142,13 +151,6 @@ class FormBrick<T> extends FormElement {
   /// Defaults to `true` if not specified.
   final bool isEnabled;
 
-  /// Optional range for date/time fields.
-  ///
-  /// Specifies the minimum and maximum allowed value for fields of type
-  /// [FormBrickType.date], [FormBrickType.time], or [FormBrickType.dateTime].
-  /// Should be a list with two [T] values: [min, max].
-  final List<T>? range;
-
   const FormBrick({
     required this.key,
     required this.type,
@@ -159,7 +161,6 @@ class FormBrick<T> extends FormElement {
     this.options,
     this.validation,
     this.isEnabled = true,
-    this.range,
     super.flex,
   });
 
@@ -205,17 +206,23 @@ class FormBrick<T> extends FormElement {
     }
 
     // For string-based fields, check min/max/pattern validations
-    if (value is String && type.isTextBrickType) {
+    if (type.isTextBrickType) {
       return FormValidationHelper.validateTextRules(value, this);
     }
 
-    // For numeric-based fields, check min/max/pattern validations
+    // For numeric-based fields, check min/max validations
     if (type.isNumericBrickType) {
       return FormValidationHelper.validateNumericRules(value, this);
     }
 
+    // For multi-select fields, check min/max validations
     if (type.isMultiSelectType) {
       return FormValidationHelper.validateMultiSelectRules(values, this);
+    }
+
+    // For datetime-based fields, check min/max validations
+    if (type.isDateTimeType) {
+      return FormValidationHelper.validateDateTimeRules(value, this);
     }
     // For selection fields (radio, dropdown), only required validation applies
     // Other validation types don't apply to selection fields
