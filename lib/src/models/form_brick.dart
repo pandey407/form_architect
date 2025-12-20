@@ -96,8 +96,15 @@ extension FormBrickTypeX on FormBrickType {
   /// Returns true if the [FormBrickType] represents a float (decimal) field.
   bool get isFloatType => this == FormBrickType.float;
 
-  /// Returns true if this [FormBrickType] is a multi-select dropdown type field.
-  bool get isMultiSelectType => this == FormBrickType.multiSelectDropdown;
+  /// Returns true if this [FormBrickType] is a multi-select field type—
+  /// including multi-select dropdown, file, image, or video (all of which
+  /// can represent multiple item selection in the UI).
+  bool get isMultiSelectType => [
+    FormBrickType.multiSelectDropdown,
+    FormBrickType.file,
+    FormBrickType.image,
+    FormBrickType.video,
+  ].contains(this);
 
   /// Returns true if the [FormBrickType] represents a date/time field (date, dateTime, or time).
   bool get isDateTimeType => [

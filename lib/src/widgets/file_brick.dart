@@ -1,6 +1,9 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_architect/form_architect.dart';
-import 'package:form_architect/src/widgets/external_brick_label.dart';
+import 'package:form_architect/src/models/form_validation_rule.dart';
+import 'package:form_architect/src/utils/type_parser_helper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
@@ -16,71 +19,95 @@ class FileBrick extends StatefulWidget {
 
 class _FileBrickState extends State<FileBrick> {
   final ImagePicker _picker = ImagePicker();
-  final List<dynamic> _selectedFiles = [];
 
   bool get _isImage => widget.brick.type == FormBrickType.image;
   bool get _isVideo => widget.brick.type == FormBrickType.video;
   bool get _isFile => widget.brick.type == FormBrickType.file;
 
-  int get _maxFiles => 10;
-  bool get _canAddMore => _selectedFiles.length < _maxFiles;
+  /// Returns the minimum number of files allowed by this brick from validation rules, or null if none.
+  int? get _minFiles {
+    final minFilesRule = widget.brick.validation?.firstWhereOrNull(
+      (rule) => rule.type == FormValidationRuleType.min,
+    );
+    final minValue = minFilesRule?.value;
+    if (minValue != null) {
+      final min = TypeParserHelper.parseNum(minValue)?.toInt();
+      return min;
+    }
+    return null;
+  }
+
+  /// Returns the maximum number of files allowed by this brick from validation rules, or null if none.
+  int? get _maxFiles {
+    final maxFilesRule = widget.brick.validation?.firstWhereOrNull(
+      (rule) => rule.type == FormValidationRuleType.max,
+    );
+    final maxValue = maxFilesRule?.value;
+    if (maxValue != null) {
+      final max = TypeParserHelper.parseNum(maxValue)?.toInt();
+      return max;
+    }
+    return null;
+  }
 
   static const double _thumbnailSize = 72.0;
 
-  Future<void> _pick() async {
+  /// Picks files according to the current brick type (image, video, or file).
+  ///
+  /// [remainingSlots] limits the number of files to select, if provided.
+  /// Returns an empty list if nothing picked or if [remainingSlots] <= 0.
+  ///
+  /// For images/videos:
+  ///   - If [remainingSlots] is 1, opens single picker.
+  ///   - Otherwise, supports multiple selection (gallery/multi picker).
+  /// For files:
+  ///   - Uses [FilePicker] and returns up to [remainingSlots] files if set.
+  Future<List<XFile>> _pick({int? remainingSlots}) async {
     try {
-      final remainingSlots = _maxFiles - _selectedFiles.length;
-      if (remainingSlots <= 0) return;
+      if (remainingSlots != null && remainingSlots <= 0) {
+        return [];
+      }
+
+      /// Helper to return up to [remainingSlots], or all if [remainingSlots] is null.
+      List<XFile> limitFiles(List<XFile> files) {
+        if (remainingSlots == null) return files;
+        return files.take(remainingSlots).toList();
+      }
 
       if (_isImage) {
         if (remainingSlots == 1) {
           final XFile? image = await _picker.pickImage(
             source: ImageSource.gallery,
           );
-          if (image != null) {
-            setState(() => _selectedFiles.insert(0, image));
-          }
-        } else {
-          final List<XFile> images = await _picker.pickMultiImage(
-            limit: remainingSlots,
-          );
-          setState(
-            () => _selectedFiles.insertAll(0, images.take(remainingSlots)),
-          );
+          return image != null ? [image] : [];
         }
-      } else if (_isVideo) {
+        final images = await _picker.pickMultiImage(limit: remainingSlots);
+        return limitFiles(images);
+      }
+
+      if (_isVideo) {
         if (remainingSlots == 1) {
           final XFile? video = await _picker.pickVideo(
             source: ImageSource.gallery,
           );
-          if (video != null) {
-            setState(() => _selectedFiles.insert(0, video));
-          }
-        } else {
-          final List<XFile> videos = await _picker.pickMultiVideo(
-            limit: remainingSlots,
-          );
-          setState(
-            () => _selectedFiles.insertAll(0, videos.take(remainingSlots)),
-          );
+          return video != null ? [video] : [];
         }
-      } else if (_isFile) {
-        final FilePickerResult? result = await FilePicker.platform.pickFiles(
-          allowMultiple: true,
-        );
+        final videos = await _picker.pickMultiVideo(limit: remainingSlots);
+        return limitFiles(videos);
+      }
+
+      if (_isFile) {
+        final result = await FilePicker.platform.pickFiles(allowMultiple: true);
         if (result != null) {
-          setState(() {
-            _selectedFiles.insertAll(0, result.files.take(remainingSlots));
-          });
+          return limitFiles(result.xFiles);
         }
       }
+
+      return [];
     } catch (e) {
       debugPrint('Error picking files: $e');
+      return [];
     }
-  }
-
-  void _removeFile(dynamic file) {
-    setState(() => _selectedFiles.remove(file));
   }
 
   IconData get _typeIcon {
@@ -89,141 +116,160 @@ class _FileBrickState extends State<FileBrick> {
     return Icons.upload_file_outlined;
   }
 
-  String get _typeLabel {
-    if (_isImage) return 'Add Image';
-    if (_isVideo) return 'Add Video';
-    return 'Add File';
-  }
-
-  Widget _buildAddButton() {
-    final isEmpty = _selectedFiles.isEmpty;
-    final theme = Theme.of(context);
-
-    return GestureDetector(
-      onTap: _pick,
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 200),
-        width: isEmpty ? double.infinity : _thumbnailSize,
-        height: isEmpty ? null : _thumbnailSize,
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: theme.dividerColor, width: 1.5),
-        ),
-        child: isEmpty
-            ? Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 20,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      _typeIcon,
-                      size: 28,
-                      color: theme.iconTheme.color ?? Colors.grey[600],
-                    ),
-                    SizedBox(height: 6),
-                    Text(
-                      _typeLabel,
-                      style:
-                          theme.textTheme.labelMedium?.copyWith(
-                            fontWeight: FontWeight.w500,
-                            color: theme.textTheme.bodyLarge?.color,
-                            fontSize: 13,
-                          ) ??
-                          TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey[700],
-                            fontWeight: FontWeight.w500,
-                          ),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      'Max $_maxFiles files',
-                      style:
-                          theme.textTheme.bodySmall?.copyWith(
-                            color: theme.textTheme.bodySmall?.color,
-                            fontSize: 11,
-                          ) ??
-                          TextStyle(fontSize: 11, color: Colors.grey[400]),
-                    ),
-                  ],
-                ),
-              )
-            : Icon(
-                Icons.add,
-                size: 24,
-                color: theme.iconTheme.color ?? Colors.grey[600],
-              ),
-      ),
-    );
+  /// Helper to reuse picking and apply the files to the field.
+  Future<void> _handlePickAndApply(
+    FormFieldState<List<XFile>> field,
+    int? remainingSlots,
+    List<XFile> selectedFiles,
+  ) async {
+    final addedFiles = await _pick(remainingSlots: remainingSlots);
+    final updatedFiles = [...addedFiles, ...selectedFiles];
+    field.didChange(updatedFiles);
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        BrickLabel(brick: widget.brick),
-        // File area
-        if (_selectedFiles.isEmpty)
-          _buildAddButton()
-        else
-          SizedBox(
-            height: _thumbnailSize + 12,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.only(top: 6),
-              clipBehavior: Clip.none,
-              child: Row(
-                children: [
-                  if (_canAddMore) ...[
-                    _buildAddButton(),
-                    if (_selectedFiles.isNotEmpty) SizedBox(width: 10),
-                  ],
-                  for (int i = 0; i < _selectedFiles.length; i++) ...[
-                    if (i > 0) SizedBox(width: 10),
-                    _ThumbnailWidget(
-                      file: _selectedFiles[i],
-                      isImage: _isImage,
-                      isVideo: _isVideo,
-                      thumbnailSize: _thumbnailSize,
-                      onRemove: _removeFile,
+
+    return FormBuilderField<List<XFile>>(
+      name: widget.brick.key,
+      enabled: widget.brick.isEnabled,
+      validator: (selectedFiles) =>
+          widget.brick.validate(values: selectedFiles),
+      builder: (field) {
+        final selectedFiles = field.value ?? <XFile>[];
+
+        final remainingSlots = _maxFiles != null
+            ? _maxFiles! - selectedFiles.length
+            : null;
+        final canSelectMore = remainingSlots != 0 || remainingSlots == null;
+        return InputDecorator(
+          decoration: InputDecoration(
+            labelText: widget.brick.label,
+            hintText: widget.brick.hint,
+            errorText: field.errorText,
+            enabled: widget.brick.isEnabled,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // File area
+              if (selectedFiles.isEmpty)
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () =>
+                      _handlePickAndApply(field, remainingSlots, selectedFiles),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Icon(_typeIcon, size: 32, color: theme.iconTheme.color),
+                        SizedBox(height: 8),
+                        if (widget.brick.hint != null)
+                          Text(
+                            widget.brick.hint!,
+                            style: theme.inputDecorationTheme.hintStyle,
+                          ),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                Row(
+                  children: [
+                    if (canSelectMore) ...[
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => _handlePickAndApply(
+                          field,
+                          remainingSlots,
+                          selectedFiles,
+                        ),
+                        child: Container(
+                          width: _thumbnailSize,
+                          height: _thumbnailSize,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: theme.dividerColor),
+                          ),
+                          child: Icon(
+                            Icons.add,
+                            size: 24,
+                            color: (theme.iconTheme.color),
+                          ),
+                        ),
+                      ),
+                      if (selectedFiles.isNotEmpty) SizedBox(width: 10),
+                    ],
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: SizedBox(
+                          height: _thumbnailSize + 20,
+                          child: Row(
+                            children: selectedFiles
+                                .map(
+                                  (file) => Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0,
+                                    ),
+                                    child: _ThumbnailWidget(
+                                      file: file,
+                                      isImage: _isImage,
+                                      isVideo: _isVideo,
+                                      thumbnailSize: _thumbnailSize,
+                                      onRemove: (file) {
+                                        final updatedFiles = List<XFile>.from(
+                                          selectedFiles,
+                                        );
+                                        updatedFiles.remove(file);
+                                        field.didChange(updatedFiles);
+                                      },
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
-                ],
-              ),
-            ),
+                ),
+              // File count indicator
+              if (selectedFiles.isNotEmpty && _maxFiles != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    '${selectedFiles.length} of $_maxFiles files',
+                    style: theme.inputDecorationTheme.helperStyle,
+                  ),
+                ),
+            ],
           ),
-        // File count indicator
-        if (_selectedFiles.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(
-              '${_selectedFiles.length} of $_maxFiles files',
-              style:
-                  theme.textTheme.bodySmall?.copyWith(
-                    color: theme.textTheme.bodySmall?.color,
-                    fontSize: 11,
-                  ) ??
-                  TextStyle(fontSize: 11, color: Colors.grey[400]),
-            ),
-          ),
-      ],
+        );
+      },
+      valueTransformer: (values) {
+        final selectedFiles = values ?? <XFile>[];
+        // Transform files to their paths for form submission
+        return selectedFiles
+            .map((file) {
+              return file.path;
+            })
+            .where((path) => path.isNotEmpty)
+            .toList();
+      },
     );
   }
 }
 
 class _ThumbnailWidget extends StatelessWidget {
-  final dynamic file;
+  final XFile file;
   final bool isImage;
   final bool isVideo;
   final double thumbnailSize;
-  final void Function(dynamic) onRemove;
+  final void Function(XFile) onRemove;
 
   const _ThumbnailWidget({
     required this.file,
@@ -240,14 +286,14 @@ class _ThumbnailWidget extends StatelessWidget {
 
     Widget preview;
 
-    if (file is XFile && isImage) {
+    if (isImage) {
       preview = Image.file(
         File(file.path),
         fit: BoxFit.cover,
         width: thumbnailSize,
         height: thumbnailSize,
       );
-    } else if (file is XFile && isVideo) {
+    } else if (isVideo) {
       preview = Container(
         color: colorScheme.surfaceContainerHighest,
         child: Center(
@@ -258,7 +304,7 @@ class _ThumbnailWidget extends StatelessWidget {
           ),
         ),
       );
-    } else if (file is PlatformFile) {
+    } else {
       final ext = _getFileExtension(file);
       preview = Container(
         color: colorScheme.surfaceContainerHighest,
@@ -267,7 +313,7 @@ class _ThumbnailWidget extends StatelessWidget {
           children: [
             Icon(
               Icons.description_outlined,
-              color: theme.iconTheme.color ?? Colors.grey[700],
+              color: theme.iconTheme.color,
               size: 24,
             ),
             if (ext.isNotEmpty) ...[
@@ -284,8 +330,6 @@ class _ThumbnailWidget extends StatelessWidget {
           ],
         ),
       );
-    } else {
-      preview = Container(color: colorScheme.surfaceContainerHighest);
     }
 
     return Stack(
@@ -324,16 +368,11 @@ class _ThumbnailWidget extends StatelessWidget {
     );
   }
 
-  String _getFileName(dynamic file) {
-    if (file is XFile) {
-      return file.name;
-    } else if (file is PlatformFile) {
-      return file.name;
-    }
-    return 'File';
+  String _getFileName(XFile file) {
+    return file.name;
   }
 
-  String _getFileExtension(dynamic file) {
+  String _getFileExtension(XFile file) {
     final name = _getFileName(file);
     final dotIndex = name.lastIndexOf('.');
     if (dotIndex != -1 && dotIndex < name.length - 1) {

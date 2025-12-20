@@ -259,16 +259,43 @@
             ]
         },
         {
-            "key": "profileImage",
+            "key": "receipts",
             "type": "IMAGE",
-            "label": "Profile Picture",
-            "hint": "Upload your profile picture"
+            "label": "Receipts",
+            "hint": "Upload receipts",
+            "validation": [
+                {
+                    "type": "REQUIRED",
+                    "message": "Receipt images is required"
+                },
+                {
+                    "type": "MIN",
+                    "value": 2,
+                    "message": "Please select at least 2 receipt"
+                },
+                {
+                    "type": "MAX",
+                    "value": 3,
+                    "message": "You can select up to 3 receipts"
+                }
+            ]
         },
         {
             "key": "introVideo",
             "type": "VIDEO",
             "label": "Introduction Video",
-            "hint": "Upload a short intro video"
+            "hint": "Upload a short intro video",
+            "validation": [
+                {
+                    "type": "REQUIRED",
+                    "message": "Video is required"
+                },
+                {
+                    "type": "MAX",
+                    "value": 1,
+                    "message": "You can select only 1 video"
+                }
+            ]
         },
         {
             "key": "resume",
