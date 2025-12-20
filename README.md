@@ -54,7 +54,7 @@ Each option in the JSON schema is defined with a `label` (user-facing text) and 
 ```json
 {
   "type": "SINGLE_SELECT_DROPDOWN",
-  "name": "country",
+  "key": "country",
   "label": "Country",
   "options": [
     { "label": "USA", "value": "us" },
@@ -89,7 +89,7 @@ For multi-select fields, `values` defines the pre-selected choices, where as for
 ```json
 {
   "type": "MULTI_SELECT_DROPDOWN",
-  "name": "favorite_colors",
+  "key": "favorite_colors",
   "label": "Favorite Colors",
   "options": [
     { "label": "Red", "value": "red" },
@@ -103,7 +103,7 @@ For multi-select fields, `values` defines the pre-selected choices, where as for
 
 #### Option Values and Form Data
 
-Selected option values are returned in the output map under the field's name:
+Selected option values are returned in the output map under the field's key:
 
 - **Single-select:**  
   `"country": "us"`
