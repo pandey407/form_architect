@@ -301,7 +301,14 @@
             "key": "resume",
             "type": "FILE",
             "label": "Resume",
-            "hint": "Upload your resume (PDF)"
+            "hint": "Upload your resume (PDF)",
+            "validation": [
+                {
+                    "type": "MAX",
+                    "value": 3,
+                    "message": "You can select at max 3 files"
+                }
+            ]
         }
     ]
 }

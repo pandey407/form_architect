@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:async/async.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -6,6 +9,9 @@ import 'package:form_architect/src/models/form_validation_rule.dart';
 import 'package:form_architect/src/utils/type_parser_helper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
+import 'package:thumbnailer/thumbnailer.dart';
+import 'package:mime/mime.dart';
 import 'dart:io';
 
 class FileBrick extends StatefulWidget {
@@ -215,7 +221,7 @@ class _FileBrickState extends State<FileBrick> {
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 8.0,
                                     ),
-                                    child: _ThumbnailWidget(
+                                    child: _Thumbnailer(
                                       file: file,
                                       isImage: _isImage,
                                       isVideo: _isVideo,
@@ -264,14 +270,14 @@ class _FileBrickState extends State<FileBrick> {
   }
 }
 
-class _ThumbnailWidget extends StatelessWidget {
+class _Thumbnailer extends StatefulWidget {
   final XFile file;
   final bool isImage;
   final bool isVideo;
   final double thumbnailSize;
   final void Function(XFile) onRemove;
 
-  const _ThumbnailWidget({
+  const _Thumbnailer({
     required this.file,
     required this.isImage,
     required this.isVideo,
@@ -280,44 +286,112 @@ class _ThumbnailWidget extends StatelessWidget {
   });
 
   @override
+  State<_Thumbnailer> createState() => __ThumbnailerState();
+}
+
+class __ThumbnailerState extends State<_Thumbnailer> {
+  final AsyncMemoizer<Uint8List?> _thumbnailMemoizer = AsyncMemoizer();
+
+  Future<Uint8List?> _generateVideoThumbnail() {
+    return _thumbnailMemoizer.runOnce(() async {
+      try {
+        final thumbnail = await VideoThumbnail.thumbnailData(
+          video: widget.file.path,
+          imageFormat: ImageFormat.PNG,
+          maxHeight: (widget.thumbnailSize * 2).toInt(),
+          quality: 75,
+        );
+        return thumbnail;
+      } catch (e) {
+        debugPrint('Error generating video thumbnail: $e');
+        return null;
+      }
+    });
+  }
+
+  String _getMimeType(XFile file) {
+    final mimeType = lookupMimeType(file.path);
+    return mimeType ?? 'application/octet-stream';
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     Widget preview;
 
-    if (isImage) {
+    if (widget.isImage) {
       preview = Image.file(
-        File(file.path),
+        File(widget.file.path),
         fit: BoxFit.cover,
-        width: thumbnailSize,
-        height: thumbnailSize,
+        width: widget.thumbnailSize,
+        height: widget.thumbnailSize,
       );
-    } else if (isVideo) {
-      preview = Container(
-        color: colorScheme.surfaceContainerHighest,
-        child: Center(
-          child: Icon(
-            Icons.play_circle_outline,
-            color: theme.iconTheme.color ?? Colors.white70,
-            size: 28,
-          ),
-        ),
+    } else if (widget.isVideo) {
+      preview = FutureBuilder<Uint8List?>(
+        future: _generateVideoThumbnail(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Container(
+              color: colorScheme.surfaceContainerHighest,
+              child: Center(
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+            );
+          } else if (snapshot.hasData && snapshot.data != null) {
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.memory(snapshot.data!, fit: BoxFit.cover),
+                Center(
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.black54,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.play_arrow,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          } else {
+            return Container(
+              color: colorScheme.surfaceContainerHighest,
+              child: Center(
+                child: Icon(
+                  Icons.play_circle_outline,
+                  color: theme.iconTheme.color ?? Colors.white70,
+                  size: 28,
+                ),
+              ),
+            );
+          }
+        },
       );
     } else {
-      final ext = _getFileExtension(file);
+      // Use thumbnailer to get the appropriate icon for the file type
+      final mimeType = _getMimeType(widget.file);
+      final fileIcon = Thumbnailer.getIconDataForMimeType(mimeType);
+      final ext = _getFileExtension(widget.file);
+
       preview = Container(
         color: colorScheme.surfaceContainerHighest,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.description_outlined,
-              color: theme.iconTheme.color,
-              size: 24,
-            ),
+            Icon(fileIcon, color: theme.iconTheme.color, size: 32),
             if (ext.isNotEmpty) ...[
-              SizedBox(height: 2),
+              SizedBox(height: 4),
               Text(
                 ext,
                 style: TextStyle(
@@ -336,8 +410,8 @@ class _ThumbnailWidget extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         Container(
-          width: thumbnailSize,
-          height: thumbnailSize,
+          width: widget.thumbnailSize,
+          height: widget.thumbnailSize,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: theme.dividerColor),
@@ -351,7 +425,7 @@ class _ThumbnailWidget extends StatelessWidget {
           top: -6,
           right: -6,
           child: GestureDetector(
-            onTap: () => onRemove(file),
+            onTap: () => widget.onRemove(widget.file),
             child: Container(
               width: 20,
               height: 20,
@@ -368,12 +442,8 @@ class _ThumbnailWidget extends StatelessWidget {
     );
   }
 
-  String _getFileName(XFile file) {
-    return file.name;
-  }
-
   String _getFileExtension(XFile file) {
-    final name = _getFileName(file);
+    final name = file.name;
     final dotIndex = name.lastIndexOf('.');
     if (dotIndex != -1 && dotIndex < name.length - 1) {
       return name.substring(dotIndex + 1).toUpperCase();
