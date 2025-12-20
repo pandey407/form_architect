@@ -23,9 +23,16 @@ enum FormValidationRuleType {
   @JsonValue('MAX')
   max,
 
-  /// Value must match a regular expression.
+  /// For string fields: value must match a regular expression.
+  /// For date fields: value represents the output format for the date.
   @JsonValue('PATTERN')
   pattern,
+
+  /// For file fields: restricts allowed file extensions.
+  ///
+  /// Use this for file or upload-type fields to specify allowed file extensions (e.g. ['pdf', 'png']).
+  @JsonValue('ALLOWED_FILE_EXTENSIONS')
+  allowedFileExtensions,
 }
 
 /// Represents a validation rule applied to a form field.
@@ -37,13 +44,19 @@ class FormValidationRule {
   /// The type of validation rule to apply (required, min, max, pattern, etc).
   final FormValidationRuleType type;
 
-  /// The rule value. Type depends on the [type]:
+  /// The rule value.
+  ///
+  /// Type depends on the [type]:
   /// - For [FormValidationRuleType.min] or [FormValidationRuleType.max]:
   ///   - For number fields: a number (e.g. int, double) as the minimum or maximum value.
   ///   - For string fields: an int representing the min or max string length.
   ///   - For date/time fields: an ISO 8601 string (e.g. "2024-06-11T13:00:00Z") representing the min or max date/time value.
-  /// - For [FormValidationRuleType.pattern]: a regex string.
+  /// - For [FormValidationRuleType.pattern]:
+  ///   - For string fields: a regex string used for pattern matching.
+  ///   - For date/time fields: a string representing output format.
+  /// - For [FormValidationRuleType.allowedFileExtensions]: a list of allowed file extension strings (e.g. `['pdf', 'png']`).
   /// - For others (like [FormValidationRuleType.required]), this can be null.
+  ///
   final dynamic value;
 
   /// The error message to display if this validation rule fails.

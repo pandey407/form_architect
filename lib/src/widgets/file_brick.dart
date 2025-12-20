@@ -1,8 +1,7 @@
-import 'dart:typed_data';
-
 import 'package:async/async.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_architect/form_architect.dart';
 import 'package:form_architect/src/models/form_validation_rule.dart';
@@ -30,30 +29,26 @@ class _FileBrickState extends State<FileBrick> {
   bool get _isVideo => widget.brick.type == FormBrickType.video;
   bool get _isFile => widget.brick.type == FormBrickType.file;
 
-  /// Returns the minimum number of files allowed by this brick from validation rules, or null if none.
-  int? get _minFiles {
-    final minFilesRule = widget.brick.validation?.firstWhereOrNull(
-      (rule) => rule.type == FormValidationRuleType.min,
-    );
-    final minValue = minFilesRule?.value;
-    if (minValue != null) {
-      final min = TypeParserHelper.parseNum(minValue)?.toInt();
-      return min;
-    }
-    return null;
-  }
-
   /// Returns the maximum number of files allowed by this brick from validation rules, or null if none.
   int? get _maxFiles {
     final maxFilesRule = widget.brick.validation?.firstWhereOrNull(
       (rule) => rule.type == FormValidationRuleType.max,
     );
     final maxValue = maxFilesRule?.value;
-    if (maxValue != null) {
-      final max = TypeParserHelper.parseNum(maxValue)?.toInt();
-      return max;
-    }
-    return null;
+    if (maxValue == null) return null;
+    final max = TypeParserHelper.parseNum(maxValue)?.toInt();
+    return max;
+  }
+
+  /// Returns the allowed file extensions for this brick from validation rules, or null if none.
+  List<String>? get allowedFileExtensions {
+    final extRule = widget.brick.validation?.firstWhereOrNull(
+      (rule) => rule.type == FormValidationRuleType.allowedFileExtensions,
+    );
+    final allowedValue = extRule?.value;
+    if (allowedValue == null) return null;
+    final allowed = TypeParserHelper.parseAllowedExtensions(allowedValue);
+    return allowed;
   }
 
   static const double _thumbnailSize = 72.0;
@@ -103,7 +98,35 @@ class _FileBrickState extends State<FileBrick> {
       }
 
       if (_isFile) {
-        final result = await FilePicker.platform.pickFiles(allowMultiple: true);
+        FilePickerResult? result;
+        try {
+          if (allowedFileExtensions != null) {
+            result = await FilePicker.platform.pickFiles(
+              allowMultiple: true,
+              type: FileType.custom,
+              allowedExtensions: allowedFileExtensions,
+            );
+          } else {
+            result = await FilePicker.platform.pickFiles(
+              allowMultiple: true,
+              type: FileType.any,
+            );
+          }
+        } on PlatformException catch (e) {
+          if (e.code == 'Unsupported file extension') {
+            // Try again with FileType.any
+            try {
+              result = await FilePicker.platform.pickFiles(
+                allowMultiple: true,
+                type: FileType.any,
+              );
+            } catch (_) {
+              result = null;
+            }
+          } else {
+            rethrow;
+          }
+        }
         if (result != null) {
           return limitFiles(result.xFiles);
         }
@@ -133,6 +156,17 @@ class _FileBrickState extends State<FileBrick> {
     field.didChange(updatedFiles);
   }
 
+  List<String> _filePaths({List<XFile>? selectedFiles}) {
+    final files = selectedFiles ?? <XFile>[];
+    // Transform files to their paths for form submission
+    return files
+        .map((file) {
+          return file.path;
+        })
+        .where((path) => path.isNotEmpty)
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -140,8 +174,11 @@ class _FileBrickState extends State<FileBrick> {
     return FormBuilderField<List<XFile>>(
       name: widget.brick.key,
       enabled: widget.brick.isEnabled,
-      validator: (selectedFiles) =>
-          widget.brick.validate(values: selectedFiles),
+      validator: (selectedFiles) {
+        return widget.brick.validate(
+          values: _filePaths(selectedFiles: selectedFiles),
+        );
+      },
       builder: (field) {
         final selectedFiles = field.value ?? <XFile>[];
 
@@ -257,14 +294,7 @@ class _FileBrickState extends State<FileBrick> {
         );
       },
       valueTransformer: (values) {
-        final selectedFiles = values ?? <XFile>[];
-        // Transform files to their paths for form submission
-        return selectedFiles
-            .map((file) {
-              return file.path;
-            })
-            .where((path) => path.isNotEmpty)
-            .toList();
+        return _filePaths(selectedFiles: values);
       },
     );
   }

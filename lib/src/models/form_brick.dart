@@ -96,10 +96,10 @@ extension FormBrickTypeX on FormBrickType {
   /// Returns true if the [FormBrickType] represents a float (decimal) field.
   bool get isFloatType => this == FormBrickType.float;
 
-  /// Returns true if this [FormBrickType] is a multi-select field type—
+  /// Returns true if this [FormBrickType] is a multi-value field type—
   /// including multi-select dropdown, file, image, or video (all of which
   /// can represent multiple item selection in the UI).
-  bool get isMultiSelectType => [
+  bool get isMultiValueType => [
     FormBrickType.multiSelectDropdown,
     FormBrickType.file,
     FormBrickType.image,
@@ -222,9 +222,9 @@ class FormBrick<T> extends FormElement {
       return FormValidationHelper.validateNumericRules(value, this);
     }
 
-    // For multi-select fields, check min/max validations
-    if (type.isMultiSelectType) {
-      return FormValidationHelper.validateMultiSelectRules(values, this);
+    // For multi-select fields, check validations such as min, max, and allowed file extensions
+    if (type.isMultiValueType) {
+      return FormValidationHelper.validateMultiValueRules(values, this);
     }
 
     // For datetime-based fields, check min/max validations

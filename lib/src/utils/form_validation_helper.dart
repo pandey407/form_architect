@@ -26,7 +26,7 @@ class FormValidationHelper {
     final requiredRule = validationRules.firstWhere(
       (rule) => rule.type == FormValidationRuleType.required,
     );
-    if (brick.type.isMultiSelectType) {
+    if (brick.type.isMultiValueType) {
       // For list values, check if empty
       if (values == null) {
         return requiredRule.message;
@@ -63,12 +63,12 @@ class FormValidationHelper {
     for (final rule in validationRules) {
       switch (rule.type) {
         case FormValidationRuleType.required:
-          // Required validation already handled
+          // Skip 'required' here, handled separately in validateRequired.
           continue;
 
         case FormValidationRuleType.min:
           if (stringValue.isWhiteSpace) {
-            // Skip min length validation if field is empty (required will catch it)
+            // Skip min length if empty: only 'required' checks emptiness.
             continue;
           }
           final minValue = rule.value;
@@ -82,7 +82,7 @@ class FormValidationHelper {
 
         case FormValidationRuleType.max:
           if (stringValue.isWhiteSpace) {
-            // Skip max length validation if field is empty
+            // Skip max length if empty: only 'required' checks emptiness.
             continue;
           }
           final maxValue = rule.value;
@@ -96,7 +96,7 @@ class FormValidationHelper {
 
         case FormValidationRuleType.pattern:
           if (stringValue.isWhiteSpace) {
-            // Skip pattern validation if field is empty (required will catch it)
+            // Skip pattern if empty: only 'required' checks emptiness.
             continue;
           }
           final pattern = rule.value;
@@ -107,11 +107,14 @@ class FormValidationHelper {
                 return rule.message;
               }
             } catch (e) {
-              // Invalid regex pattern, skip this validation
+              // Skip invalid regex patterns for pattern rules.
               continue;
             }
           }
           break;
+        case FormValidationRuleType.allowedFileExtensions:
+          // Skip allowedFileExtensions: only applies for file upload fields.
+          continue;
       }
     }
 
@@ -131,12 +134,12 @@ class FormValidationHelper {
     for (final rule in validationRules) {
       switch (rule.type) {
         case FormValidationRuleType.required:
-          // Required validation already handled
+          // Skip 'required' here, handled separately in validateRequired.
           continue;
 
         case FormValidationRuleType.min:
           if (stringValue.isWhiteSpace) {
-            // Skip min validation if field is empty (required will catch it)
+            // Skip min validation if input is empty, 'required' handles emptiness.
             continue;
           }
           final minValue = rule.value;
@@ -144,7 +147,7 @@ class FormValidationHelper {
             // Use TypeParserHelper to parse as num
             final numValue = TypeParserHelper.parseNum(stringValue);
             if (numValue == null) {
-              // Invalid number format, skip min check
+              // Skip min validation if input can't be parsed as number.
               continue;
             }
             final minNum = TypeParserHelper.parseNum(minValue);
@@ -156,14 +159,14 @@ class FormValidationHelper {
 
         case FormValidationRuleType.max:
           if (stringValue.isWhiteSpace) {
-            // Skip max validation if field is empty
+            // Skip max validation if input is empty, 'required' handles emptiness.
             continue;
           }
           final maxValue = rule.value;
           if (maxValue != null) {
             final numValue = TypeParserHelper.parseNum(stringValue);
             if (numValue == null) {
-              // Invalid number format, skip max check
+              // Skip max validation if input can't be parsed as number.
               continue;
             }
             final maxNum = TypeParserHelper.parseNum(maxValue);
@@ -174,7 +177,11 @@ class FormValidationHelper {
           break;
 
         case FormValidationRuleType.pattern:
-          // Pattern validation typically do not apply to numeric field.
+          // Skip 'pattern' for numeric fields: pattern is not relevant to numeric validation.
+          continue;
+
+        case FormValidationRuleType.allowedFileExtensions:
+          // Skip allowedFileExtensions: only applies to file fields.
           continue;
       }
     }
@@ -182,13 +189,14 @@ class FormValidationHelper {
     return null; // All validations passed
   }
 
-  /// Validates a list of selected values for a multi-select dropdown.
+  /// Validates a list of selected values for any multi-value field:
+  /// e.g., multi-select dropdown, image, video, or file pickers.
   ///
-  /// [values] - The list of selected values
-  /// [brick]  - The FormBrick instance containing validation rules
+  /// [values] - The list of selected values (e.g., selected options or file paths)
+  /// [brick]  - The FormBrick instance containing relevant validation rules
   ///
   /// Returns the error message if validation fails, otherwise null.
-  static String? validateMultiSelectRules<E>(List<E>? values, FormBrick brick) {
+  static String? validateMultiValueRules<E>(List<E>? values, FormBrick brick) {
     final validationRules = brick.validation;
     if (validationRules == null || validationRules.isEmpty) {
       return null;
@@ -198,11 +206,11 @@ class FormValidationHelper {
     for (final rule in validationRules) {
       switch (rule.type) {
         case FormValidationRuleType.required:
-          // Required validation already handled
+          // Skip 'required' here, handled separately in validateRequired.
           continue;
 
         case FormValidationRuleType.min:
-          // For multi-select, "min" means minimum # of selections
+          // min refers to the minimum number of selected items.
           final minValue = rule.value;
           if (minValue != null) {
             final minNum = TypeParserHelper.parseNum(minValue);
@@ -212,7 +220,7 @@ class FormValidationHelper {
           }
           break;
         case FormValidationRuleType.max:
-          // For multi-select, "max" means maximum # of selections
+          // max refers to the maximum number of selected items.
           final maxValue = rule.value;
           if (maxValue != null) {
             final maxNum = TypeParserHelper.parseNum(maxValue);
@@ -221,8 +229,25 @@ class FormValidationHelper {
             }
           }
           break;
-        default:
-          // Pattern validation typically do not apply to multi-select.
+        case FormValidationRuleType.pattern:
+          // Skip 'pattern' for multi-value fields: not relevant.
+          continue;
+
+        case FormValidationRuleType.allowedFileExtensions:
+          // Applies for fields where the selected values are file paths (e.g., file/image/video pickers)
+          if (values == null || values.isEmpty) continue;
+          final allowed = TypeParserHelper.parseAllowedExtensions(rule.value);
+
+          if (allowed != null && allowed.isNotEmpty) {
+            for (final filePath in values) {
+              if (filePath is String) {
+                final ext = filePath.extension;
+                if (ext != null && !allowed.contains(ext)) {
+                  return rule.message;
+                }
+              }
+            }
+          }
           break;
       }
     }
@@ -243,14 +268,14 @@ class FormValidationHelper {
     // Parse the value to DateTime
     final dt = TypeParserHelper.parseDateTime(value);
     if (dt == null) {
-      // If value can't be parsed, skip further date validation
+      // If value can't be parsed as DateTime, skip further validation.
       return null;
     }
 
     for (final rule in validationRules) {
       switch (rule.type) {
         case FormValidationRuleType.required:
-          // Required validation already handled
+          // Skip 'required' here, handled separately in validateRequired.
           continue;
         case FormValidationRuleType.min:
           final minValue = rule.value;
@@ -270,9 +295,13 @@ class FormValidationHelper {
             }
           }
           break;
-        default:
-          // Pattern validation typically do not apply to date time field, instead the pattern is used for value transformation to required format.
-          break;
+        case FormValidationRuleType.pattern:
+          // Skip 'pattern' for date/time fields: not applicable, it instead represents the output format.
+          continue;
+
+        case FormValidationRuleType.allowedFileExtensions:
+          // Skip allowedFileExtensions: relevant only for file fields.
+          continue;
       }
     }
     return null;

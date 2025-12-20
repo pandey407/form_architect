@@ -33,4 +33,30 @@ class TypeParserHelper {
     if (value == null) return null;
     return value.toString();
   }
+
+  /// Attempts to parse a dynamic value as a list of allowed file extensions (lowercased, without dot).
+  /// Supports List of [String], comma-separated Strings, or single extension strings.
+  /// Returns null if input is null or empty.
+  static List<String>? parseAllowedExtensions(dynamic value) {
+    if (value == null) return null;
+    if (value is List) {
+      // Only keep strings, lowercased, trimmed, remove leading dots
+      final extensions = value
+          .whereType<String>()
+          .map((e) => e.trim().toLowerCase().replaceAll(RegExp(r'^\.'), ''))
+          .where((e) => e.isNotEmpty)
+          .toList();
+      return extensions.isEmpty ? null : extensions;
+    }
+    if (value is String) {
+      if (value.isWhiteSpace) return null;
+      final parts = value
+          .split(',')
+          .map((e) => e.trim().toLowerCase().replaceAll(RegExp(r'^\.'), ''))
+          .where((e) => e.isNotEmpty)
+          .toList();
+      return parts.isEmpty ? null : parts;
+    }
+    return null;
+  }
 }

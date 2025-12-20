@@ -16,9 +16,18 @@ extension StringExt on String {
 
   /// Returns true if the string is null, empty, or contains only whitespace characters.
   bool get isWhiteSpace => trim().isEmpty;
+
+  /// Returns the extension of the file name, or null if there is none.
+  /// Example: 'photo.jpg'.extension => 'jpg', 'archive.tar.gz'.extension => 'gz'
+  String? get extension {
+    final segments = split('.');
+    if (segments.length < 2) return null;
+    final ext = segments.last.trim();
+    return ext.isEmpty ? null : ext.toLowerCase();
+  }
 }
 
 extension NullableStringExt on String? {
   /// Returns true if the string is null, empty, or contains only whitespace characters.
-  bool get isWhiteSpace => this == null || this!.trim().isEmpty;
+  bool get isWhiteSpace => this == null || this!.isWhiteSpace;
 }

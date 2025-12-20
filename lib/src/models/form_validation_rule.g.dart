@@ -25,4 +25,5 @@ const _$FormValidationRuleTypeEnumMap = {
   FormValidationRuleType.min: 'MIN',
   FormValidationRuleType.max: 'MAX',
   FormValidationRuleType.pattern: 'PATTERN',
+  FormValidationRuleType.allowedFileExtensions: 'ALLOWED_FILE_EXTENSIONS',
 };

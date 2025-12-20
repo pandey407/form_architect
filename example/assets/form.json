@@ -307,6 +307,11 @@
                     "type": "MAX",
                     "value": 3,
                     "message": "You can select at max 3 files"
+                },
+                {
+                    "type": "ALLOWED_FILE_EXTENSIONS",
+                    "value": ["csv", "doc"],
+                    "message": "Not allowed file type"
                 }
             ]
         }
