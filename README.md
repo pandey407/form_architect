@@ -64,7 +64,7 @@ Each option in the JSON schema is defined with a `label` (user-facing text) and 
 }
 ```
 
-### Option Structure
+**Option Structure**
 
 Each option object can contain:
 
@@ -74,7 +74,7 @@ Each option object can contain:
 | `value`    | any       | Yes      | The value returned in form output  |
 
 
-### Fields with Options
+**Fields with Options**
 
 The following field types support (or require) an `"options"` property:
 
@@ -84,7 +84,7 @@ The following field types support (or require) an `"options"` property:
 
 For multi-select fields, `values` defines the pre-selected choices, where as for single select dropdown and radio fields `value` defines the selected choice.
 
-### Example: Multi-Select Dropdown
+**Example: Multi-Select Dropdown**
 
 ```json
 {
@@ -101,7 +101,7 @@ For multi-select fields, `values` defines the pre-selected choices, where as for
 }
 ```
 
-#### Option Values and Form Data
+**Option Values and Form Data**
 
 Selected option values are returned in the output map under the field's key:
 
@@ -127,17 +127,16 @@ The table below shows which validation types are supported for each field type.
 | **PASSWORD**            |   ✅     | ✅  | ✅  |   ✅    |         ❌             |
 | **INTEGER**             |   ✅     | ✅  | ✅  |   ❌    |         ❌             |
 | **FLOAT**               |   ✅     | ✅  | ✅  |   ❌    |         ❌             |
-| **SINGLE_SELECT_DROPDOWN** | ✅  | ❌  | ❌  |   ❌    |         ❌             |
 | **RADIO**               |   ✅     | ❌  | ❌  |   ❌    |         ❌             |
+| **TOGGLE**            |   ✅     | ❌  | ❌  |   ❌    |         ❌             |
+| **SINGLE_SELECT_DROPDOWN** | ✅  | ❌  | ❌  |   ❌    |         ❌             |
 | **MULTI_SELECT_DROPDOWN** | ✅   | ✅  | ✅  |   ❌    |         ❌             |
-| **CHECKBOX**            |   ✅     | ❌  | ❌  |   ❌    |         ❌             |
-| **SWITCH**              |   ✅     | ❌  | ❌  |   ❌    |         ❌             |
-| **FILE**                |   ✅     | ✅  | ✅  |   ❌    |         ✅             |
-| **IMAGE**               |   ✅     | ✅  | ✅  |   ❌    |         ❌             |
-| **VIDEO**               |   ✅     | ✅  | ✅  |   ❌    |         ❌             |
 | **DATE**                |   ✅     | ✅  | ✅  |   ✅    |         ❌             |
 | **TIME**                |   ✅     | ✅  | ✅  |   ✅    |         ❌             |
 | **DATE_TIME**           |   ✅     | ✅  | ✅  |   ✅    |         ❌             |
+| **IMAGE**               |   ✅     | ✅  | ✅  |   ❌    |         ❌             |
+| **VIDEO**               |   ✅     | ✅  | ✅  |   ❌    |         ❌             |
+| **FILE**                |   ✅     | ✅  | ✅  |   ❌    |         ✅             |
 
 
 See the table below for available validation types and usage examples.
