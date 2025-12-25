@@ -4,7 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_architect/form_architect.dart';
 import 'package:form_architect/src/models/form_element.dart';
+import 'package:form_architect/src/widgets/date_time_brick.dart';
+import 'package:form_architect/src/widgets/file_brick.dart';
+import 'package:form_architect/src/widgets/multi_select_dropdown_brick.dart';
 import 'package:form_architect/src/widgets/numeric_brick.dart';
+import 'package:form_architect/src/widgets/radio_brick.dart';
+import 'package:form_architect/src/widgets/single_select_dropdown_brick.dart';
+import 'package:form_architect/src/widgets/text_brick.dart';
+import 'package:form_architect/src/widgets/toggle_brick.dart';
+
+/// Widget builder for custom bricks.
+/// * [context] is the BuildContext
+/// * [brick] is the field definition
+typedef CustomBrickBuilder =
+    Widget Function(BuildContext context, FormBrick brick);
 
 /// Class to wrap validated form data and files separately.
 class FormArchitectResult {
@@ -18,8 +31,19 @@ class FormArchitectResult {
 }
 
 /// Main builder widget that constructs a complete form from JSON configuration.
-///
 /// This widget handles parsing JSON, rendering the form layout, and managing form state.
+///
+/// To provide custom bricks, provide the [customBricks] mapping.
+/// Example:
+/// ```dart
+/// FormArchitect(
+///   json: myJson,
+///   customBricks: {
+///     FormBrickType.text: (ctx, brick) => CustomTextBrick(brick),
+///     FormBrickType.date: (ctx, brick) => CustomDateBrick(brick: brick),
+///   }
+/// )
+/// ```
 class FormArchitect extends StatefulWidget {
   /// JSON string or Map containing the form configuration
   final dynamic json;
@@ -27,7 +51,16 @@ class FormArchitect extends StatefulWidget {
   /// Padding around the form
   final EdgeInsets? padding;
 
-  const FormArchitect({super.key, required this.json, this.padding});
+  /// Optional: map of custom brick renderers by FormBrickType
+  /// If a builder exists for a type, it will be used to render that brick type.
+  final Map<FormBrickType, CustomBrickBuilder>? customBricks;
+
+  const FormArchitect({
+    super.key,
+    required this.json,
+    this.padding,
+    this.customBricks,
+  });
 
   @override
   State<FormArchitect> createState() => FormArchitectState();
@@ -155,10 +188,16 @@ class FormArchitectState extends State<FormArchitect> {
   }
 
   Widget _buildFormBrick(FormBrick brick) {
+    // If a custom brick builder is provided for this type, use it
+    final customBricks = widget.customBricks;
+    if (customBricks != null && customBricks.containsKey(brick.type)) {
+      return customBricks[brick.type]!(context, brick);
+    }
+
     switch (brick.type) {
       case FormBrickType.text:
-      case FormBrickType.textArea:
       case FormBrickType.password:
+      case FormBrickType.textArea:
         return TextBrick(brick: brick);
 
       case FormBrickType.integer:

@@ -3,7 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_architect/form_architect.dart';
+import 'package:form_architect/src/models/form_brick.dart';
 import 'package:form_architect/src/models/form_validation_rule.dart';
 import 'package:form_architect/src/utils/type_parser_helper.dart';
 import 'package:image_picker/image_picker.dart';
